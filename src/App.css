@@ -183,3 +183,6 @@ html {
 header.sticky {
   z-index: 50;
 }
+button[aria-label="Admin Access"] {
+  display: none !important;
+}

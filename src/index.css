@@ -178,7 +178,9 @@
     @apply h-9 w-9 rounded-lg bg-brand-yellow text-brand-darkGray flex items-center justify-center font-bold text-xl;
   }
 }
-
+button[aria-label="Admin Access"] {
+  display: none !important;
+}
 @layer utilities {
   .text-balance {
     text-wrap: balance;
