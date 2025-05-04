@@ -754,6 +754,55 @@ def api_chatlogs(req: https_fn.Request) -> https_fn.Response:
         logger.error(f"API chatlogs error: {str(e)}", exc_info=True)
         return https_fn.Response(json.dumps({"error": str(e)}), status=HTTP_STATUS["SERVER_ERROR"])
 
+@https_fn.on_request(
+    cors=options.CorsOptions(
+        cors_origins=CORS_ORIGINS,
+        cors_methods=["POST"]
+    )
+)
+def contact_us(req: https_fn.Request) -> https_fn.Response:
+    """Handle Contact Us form POST → Firestore contacts collection."""
+    try:
+        # must be JSON POST
+        if req.method != "POST" or not req.is_json:
+            return https_fn.Response(
+                json.dumps({"error": "POST JSON required"}),
+                status=HTTP_STATUS["BAD_REQUEST"]
+            )
+
+        data = req.get_json()
+
+        # basic validation
+        for field in ("firstName", "lastName", "email", "message"):
+            if not data.get(field, "").strip():
+                return https_fn.Response(
+                    json.dumps({"error": f"{field} is required"}),
+                    status=HTTP_STATUS["BAD_REQUEST"]
+                )
+
+        # write to Firestore
+        db = get_firestore_client()
+        contact_ref = db.collection("contacts").document()  # auto-ID
+        contact_ref.set({
+            "firstName": data["firstName"].strip(),
+            "lastName":  data["lastName"].strip(),
+            "email":     data["email"].strip(),
+            "message":   data["message"].strip(),
+            "createdAt": datetime.now(timezone.utc)
+        })
+
+        return https_fn.Response(
+            json.dumps({"success": True}),
+            status=HTTP_STATUS["OK"]
+        )
+
+    except Exception as e:
+        logger.error(f"contact_us error: {e}", exc_info=True)
+        return https_fn.Response(
+            json.dumps({"error": "Server error"}),
+            status=HTTP_STATUS["SERVER_ERROR"]
+        )
+
 def handle_error(e: Exception, status_code: int = HTTP_STATUS["SERVER_ERROR"]) -> https_fn.Response:
     """Helper function to handle errors and return proper JSON responses"""
     error_message = str(e)

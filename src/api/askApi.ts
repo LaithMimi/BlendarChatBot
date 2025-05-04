@@ -35,6 +35,37 @@ const CHATLOG_API_URL = import.meta.env.MODE === 'production'
   ? "https://api-chatlogs-jfys4ba3ka-uc.a.run.app"
   : "http://127.0.0.1:5001/arabicchatbot-24bb2/us-central1/api_chatlogs";
 
+
+export interface ContactFormData {
+  firstName: string;
+  lastName:  string;
+  email:     string;
+  message:   string;
+}
+
+/**
+ * Save a “Contact Us” submission into Firestore.
+ *
+ * @throws if the write fails
+ */
+export async function submitContact(formData: ContactFormData): Promise<void> {
+  // trim everything
+  const payload = {
+    firstName: formData.firstName.trim(),
+    lastName:  formData.lastName.trim(),
+    email:     formData.email.trim(),
+    message:   formData.message.trim(),
+    createdAt: serverTimestamp()
+  };
+
+  // get an auto‐ID document ref in `contacts`
+  const contactsRef = collection(db, 'contacts');
+  const newDocRef   = doc(contactsRef);
+
+  // write it
+  await setDoc(newDocRef, payload);
+}
+
 /**
  * Sends a question to the chatbot API and returns the response
  */
@@ -279,4 +310,8 @@ function chatContainsSearchTerm(chat: ChatSession, searchTerm: string): boolean 
 function isWithinDateRange(chat: ChatSession, dateRange: { from: Date, to: Date }): boolean {
   const chatDate = new Date(chat.createdAt || 0);
   return chatDate >= dateRange.from && chatDate <= dateRange.to;
+}
+
+function serverTimestamp() {
+  throw new Error('Function not implemented.');
 }
