@@ -153,13 +153,14 @@ const Index = () => {
               target="_blank" 
               rel="noopener noreferrer"
             >
-              <Button
+                <Button
                 variant="outline"
                 className="w-full sm:w-auto bg-transparent border-2 border-brand-darkGray dark:border-white text-brand-darkGray dark:text-white text-lg py-6 px-8 rounded-full transition-transform transform hover:scale-105 hover:bg-brand-darkGray/10 dark:hover:bg-white/10 flex items-center gap-2"
-              >
+                dir="rtl"
+                >
                 למד עוד
-                <ExternalLink className="h-5 w-5" />
-              </Button>
+                <ExternalLink className="h-5 w-5 transform rotate-0" />
+                </Button>
             </a>
             <Link to={isAuthenticated ? "/chat" : "/auth"}>
               <Button

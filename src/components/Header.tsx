@@ -153,16 +153,16 @@ const Header: React.FC<HeaderProps> = ({
               )}
               
               {/* Theme Toggle Button */}
-              {/* <Tooltip>
+              <Tooltip>
                 <TooltipTrigger asChild>
-                  <button onClick={toggleTheme} className="flex items-center justify-center h-9 w-9 rounded-full hover:ring-2 hover:ring-brand-bordeaux/30 transition-all dark:bg-white/10 bg-brand-darkGray/10 dark:text-white text-brand-darkGray" aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}>
+                  <button onClick={toggleTheme} className="flex items-center justify-center h-9 w-9 rounded-full hover:ring-2 hover:ring-brand-bordeaux/30 transition-all dark:bg-white/10 bg-brand-darkGreen/10 dark:text-white text-brand-darkGray" aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}>
                     {isDarkMode ? <Sun size={16} className="transition-transform duration-300 hover:rotate-12" /> : <Moon size={16} className="transition-transform duration-300 hover:-rotate-12" />}
                   </button>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>{isDarkMode ? "Light Mode" : "Dark Mode"}</p>
                 </TooltipContent>
-              </Tooltip> */}
+              </Tooltip>
             </div>
           </TooltipProvider>
         </div>
