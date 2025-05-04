@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Footer from '@/components/Footer';
 import TutorialPopup from '@/components/TutorialPopup';
+import Contact from '@/components/ContactPopup';
 import { 
   ChevronDown, 
   Calendar, 
@@ -16,21 +17,8 @@ import {
   Twitter,
   MessageCircle
 } from 'lucide-react';
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from "@/components/ui/tabs";
 import { motion } from 'framer-motion';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
-} from "@/components/ui/dialog";
+
 import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
@@ -88,31 +76,31 @@ const Index = () => {
           <img 
             src="/images/img3.png" 
             alt="Decorative Element 1" 
-            className="absolute top-[5%] md:top-[5%] left-[5%] md:left-[20%] w-36 md:w-46 h-auto opacity-90 animate-float transition-all ease-in-out duration-[15000ms] hover:scale-105 hover:rotate-[3deg] hover:opacity-100 max-w-[20vw] md:max-w-[15vw]"
+            className="absolute top-[5%] md:top-[5%] left-[5%] md:left-[20%] w-36 md:w-46 h-auto opacity-10 animate-float transition-all ease-in-out duration-[15000ms] hover:scale-105 hover:rotate-[3deg] hover:opacity-100 max-w-[20vw] md:max-w-[15vw]"
           />
 
           <img 
             src="/images/img2.png" 
             alt="Decorative Element 2" 
-            className="absolute top-[15%] right-[5%] md:right-[20%] w-28 md:w-44 h-auto opacity-90 animate-float-slow transition-all ease-in-out duration-[12000ms] hover:scale-105 hover:rotate-[-3deg] hover:opacity-100 max-w-[20vw] md:max-w-[15vw]"
+            className="absolute top-[15%] right-[5%] md:right-[20%] w-36 md:w-46 h-auto opacity-10 animate-float transition-all ease-in-out duration-[15000ms] hover:scale-105 hover:rotate-[3deg] hover:opacity-100 max-w-[20vw] md:max-w-[15vw]"
           />
 
           <img 
             src="/images/img1.png" 
             alt="Decorative Element 3" 
-            className="absolute bottom-[15%] left-[8%] md:left-[15%] w-32 md:w-52 h-auto opacity-90 animate-float-slower transition-all ease-in-out duration-[14000ms] hover:scale-110 hover:opacity-100 hover:translate-x-2 max-w-[20vw] md:max-w-[15vw]"
+            className="absolute bottom-[15%] left-[8%] md:left-[15%] w-36 md:w-46 h-auto opacity-10 animate-float transition-all ease-in-out duration-[15000ms] hover:scale-105 hover:rotate-[3deg] hover:opacity-100 max-w-[20vw] md:max-w-[15vw]"
           />
 
           <img 
             src="/images/img4.png" 
             alt="Decorative Element 4" 
-            className="absolute top-[60%] right-[8%] md:right-[15%] w-24 md:w-40 h-auto opacity-90 animate-float transition-all ease-in-out duration-[13000ms] hover:rotate-[5deg] hover:scale-110 hover:opacity-100 max-w-[20vw] md:max-w-[15vw]"
+            className="absolute top-[60%] right-[8%] md:right-[15%] w-24 md:w-40 h-auto opacity-10 animate-float transition-all ease-in-out duration-[13000ms] hover:rotate-[5deg] hover:scale-110 hover:opacity-100 max-w-[20vw] md:max-w-[15vw]"
           />
 
           <img 
             src="/images/img5.png" 
             alt="Decorative Element 5" 
-            className="absolute top-[40%] left-[5%] md:left-[15%] w-28 md:w-50 h-auto opacity-90 animate-float transition-all ease-in-out duration-[11000ms] hover:skew-x-6 hover:scale-110 hover:opacity-100 max-w-[20vw] md:max-w-[15vw]"
+            className="absolute top-[40%] left-[5%] md:left-[15%] w-28 md:w-50 h-auto opacity-10 animate-float transition-all ease-in-out duration-[11000ms] hover:skew-x-6 hover:scale-110 hover:opacity-100 max-w-[20vw] md:max-w-[15vw]"
           />
 
         </div>
@@ -139,8 +127,7 @@ const Index = () => {
             <span className="text-brand-bordeaux">أهلاً وسهلاً في بوت تعلم العربي</span> 
             </motion.h1>
             
-            
-            
+
             <motion.p 
             className="text-xl md:text-2xl lg:text-3xl font-alef text-brand-darkGray/80 dark:text-white/80 max-w-3xl mx-auto text-center" 
             dir="rtl"
@@ -184,11 +171,12 @@ const Index = () => {
             </Link>
             <Link to="/subscription">
               <Button
-                variant="outline"
-                className="w-full sm:w-auto bg-brand-bordeaux hover:bg-brand-bordeaux/90 text-white text-lg py-6 px-8 rounded-full transition-transform transform hover:scale-105 flex items-center gap-2"
+              variant="outline"
+              className="w-full sm:w-auto bg-brand-bordeaux hover:bg-brand-bordeaux/90 text-white text-lg py-6 px-8 rounded-full transition-transform transform hover:scale-105 flex items-center gap-2"
+              dir="rtl"
               >
-                Premium Plans
-                <ArrowRight className="h-5 w-5" />
+              תוכניות פרימיום
+              <ArrowRight className="h-5 w-5 transform rotate-180" />
               </Button>
             </Link>
           </div>
@@ -285,15 +273,7 @@ const Index = () => {
             יחד, אנו יכולים לבנות גשרים תרבותיים ולחזק את החברה הישראלית
             </motion.p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="https://api.whatsapp.com/send/?phone=97225383892&text&app_absent=0" target="_blank" rel="noopener noreferrer">
-              <Button
-                variant="outline"
-                className="w-full sm:w-auto bg-transparent border-2 border-white text-white text-lg py-6 px-8 rounded-full transition-transform transform hover:scale-105 hover:bg-white/10 flex items-center gap-2"
-              >
-                צור קשר
-                <ExternalLink className="h-5 w-5" />
-              </Button>
-            </a>
+            <Contact/>
           </div>
         </div>
       </section>

@@ -119,36 +119,23 @@ export default {
 				},
 				// Floating animations for elements (5-8s duration)
 				float: {
-					"0%, 100%": { transform: "translateY(0)" },
-					"50%": { transform: "translateY(-5px)" },
+					'0%, 100%': { transform: 'translateY(0px)', opacity: '0.15' },
+					'50%': { transform: 'translateY(-20px)', opacity: '1' },
+				  },
+				  'float-slow': {
+					'0%, 100%': { transform: 'translateY(0px)', opacity: '0.1' },
+					'50%': { transform: 'translateY(-10px)', opacity: '1' },
+				  },
+				  'float-slower': {
+					'0%, 100%': { transform: 'translateY(0px)', opacity: '0.1' },
+					'50%': { transform: 'translateY(-5px)', opacity: '1.1' },
+				  },
 				},
-				"float-slow": {
-					"0%, 100%": { transform: "translateY(0) translateX(0)" },
-					"50%": { transform: "translateY(-5px) translateX(3px)" },
+				animation: {
+				  float: 'float 6s ease-in-out infinite',
+				  'float-slow': 'float-slow 10s ease-in-out infinite',
+				  'float-slower': 'float-slower 14s ease-in-out infinite',
 				},
-				"float-slower": {
-					"0%, 100%": { transform: "translateY(0) translateX(0)" },
-					"50%": { transform: "translateY(-7px) translateX(4px)" },
-				},
-				"rotate-slow": {
-					"0%": { transform: "rotate(0deg)" },
-					"50%": { transform: "rotate(2deg)" },
-					"100%": { transform: "rotate(0deg)" },
-				},
-			},
-			animation: {
-				"accordion-down": "accordion-down 0.2s ease-out",
-				"accordion-up": "accordion-up 0.2s ease-out",
-				"fade-in": "fade-in 0.2s ease-out",
-				"fade-out": "fade-out 0.2s ease-out",
-				"slide-in-right": "slide-in-right 0.7s ease-out",
-				"slide-in-left": "slide-in-left 0.7s ease-out",
-				"slide-in-bottom": "slide-in-bottom 0.7s ease-out",
-				"pulse-medium": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-				"float-slow": "float-slow 3s ease-in-out infinite",
-				"float-slower": "float-slower 3s ease-in-out infinite",
-				"rotate-slow": "rotate-slow 3s ease-in-out infinite",
-			},
 		},
 	},
 	plugins: [require("tailwindcss-animate")],

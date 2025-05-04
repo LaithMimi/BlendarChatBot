@@ -365,7 +365,6 @@ const ChatLogs: React.FC = () => {
               <TabsTrigger value="upload-materials">Upload Teaching Materials</TabsTrigger>
               <TabsTrigger value="view-materials">View Materials</TabsTrigger>
             </TabsList>
-            
             <TabsContent value="chat-logs">
               <div className="bg-white/70 dark:bg-black/20 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-border mb-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

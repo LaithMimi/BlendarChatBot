@@ -15,7 +15,6 @@ const TutorialPopup: React.FC<TutorialPopupProps> = ({ onClose }) => {
   const [isVisible, setIsVisible] = useState(false);
   
   useEffect(() => {
-    // Slight delay before showing the popup to ensure the page is fully loaded
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, 2000);
@@ -25,7 +24,6 @@ const TutorialPopup: React.FC<TutorialPopupProps> = ({ onClose }) => {
   
   const handleDismiss = () => {
     setIsVisible(false);
-    // Set a flag in localStorage to not show this again
     localStorage.setItem('tutorialShown', 'true');
     onClose();
   };
@@ -34,10 +32,12 @@ const TutorialPopup: React.FC<TutorialPopupProps> = ({ onClose }) => {
   
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center animate-fade-in">
-      <div className="relative max-w-md w-full bg-white dark:bg-brand-darkGray rounded-lg shadow-xl p-6 animate-scale-in">
-        <h3 className="text-xl font-bold mb-4 text-brand-darkGray dark:text-white text-right" dir="rtl">ברוכים הבאים ל-Blend.Ar!</h3>
+      <div className="relative max-w-md w-full bg-white dark:bg-brand-darkGray rounded-lg shadow-xl p-6 animate-scale-in rtl">
+        <h3 className="text-xl font-bold mb-4 text-brand-darkGray dark:text-white text-right">
+          ברוכים הבאים ל-Blend.Ar!
+        </h3>
         
-        <p className="mb-6 text-brand-darkGray/80 dark:text-white/80 text-right" dir="rtl">
+        <p className="mb-6 text-brand-darkGray/80 dark:text-white/80 text-right">
           לפני שתתחילו, תוכלו להתאים אישית את חווית הלמידה שלכם על ידי הגדרת העדפות.
         </p>
         
@@ -48,17 +48,19 @@ const TutorialPopup: React.FC<TutorialPopupProps> = ({ onClose }) => {
                 <Settings size={16} />
               </div>
             </div>
-            <span className="text-sm text-right" dir="rtl">לחצו על האייקון הזה כדי לגשת להעדפות שלכם</span>
+            <span className="text-sm text-right">
+              לחצו על האייקון הזה כדי לגשת להעדפות שלכם
+            </span>
           </div>
           
           <div className="absolute -top-2 right-16 transform rotate-45 w-4 h-4 bg-brand-bordeaux"></div>
         </div>
         
-        <p className="mb-6 text-brand-darkGray/80 dark:text-white/80 text-right" dir="rtl">
+        <p className="mb-6 text-brand-darkGray/80 dark:text-white/80 text-right">
           אתם יכולים להגדיר את:
         </p>
         
-        <ul className="list-disc list-inside mb-6 space-y-2 text-brand-darkGray/80 dark:text-white/80 text-right" dir="rtl">
+        <ul className="list-disc list-inside mb-6 space-y-2 text-brand-darkGray/80 dark:text-white/80 text-right">
           <li>שם</li>
           <li>רמת שפה</li>
           <li>שבוע לימודים</li>
@@ -67,7 +69,7 @@ const TutorialPopup: React.FC<TutorialPopupProps> = ({ onClose }) => {
         </ul>
         
         <div className="flex justify-start">
-          <Button onClick={handleDismiss} className="bg-brand-bordeaux hover:bg-brand-bordeaux/90 text-white" dir="rtl">
+          <Button onClick={handleDismiss} className="bg-brand-bordeaux hover:bg-brand-bordeaux/90 text-white">
             הבנתי!
           </Button>
         </div>
