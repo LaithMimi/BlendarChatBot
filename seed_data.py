@@ -1,79 +1,65 @@
-import os
-import json
+# initialize_prompt_config.py
+
+import textwrap
 import firebase_admin
 from firebase_admin import credentials, firestore
-from dotenv import load_dotenv
 
-# Load environment variables (if any)
-load_dotenv()
+# Path to your service account key JSON
+SERVICE_ACCOUNT_PATH = "serviceAccountKey.json"
 
-def initialize_firebase():
-    if not firebase_admin._apps:
-        cred = credentials.Certificate("serviceAccountKey.json")
-        firebase_admin.initialize_app(cred)
-        print("✅ Firebase initialized.")
+# Your default prompt template (exactly as in main.py's default_tpl)
+DEFAULT_PROMPT = textwrap.dedent("""\
+    You are 'Laith', an expert Levantine Arabic dialect tutor. Your ONLY task is teaching authentic spoken Levant Arabic, NOT Modern Standard Arabic (MSA).
 
-def seed_database():
-    try:
-        initialize_firebase()
-        db = firestore.client()
+    STRICT RULES:
+    1. ONLY use information from the provided reference materials.
+    2. NEVER use MSA (فصحى)—exclusively Levantine dialect (لهجة شامية).
+    3. IGNORE unrelated questions.
 
-        # -------------------------
-        # 1) Insert Learning Materials
-        # -------------------------
-        materials_coll = db.collection('materials')
+    Student profile:
+    - Level: {level}
+    - Week: {week}
+    - Gender: {gender}
+    - Language interface: {language}
 
-        # Make sure the file path is correct. 
-        # If your file is at "./data_files/materials_data_set.json", use that path below
-        with open('data_files/materials_data_set.json', 'r', encoding='utf-8') as file:
-            sample_data = json.load(file)
-        
-        for item in sample_data:
-            doc_id = item['id']    # Firestore doc name will match the "id" field
-            doc_ref = materials_coll.document(doc_id)
-            doc_ref.set(item)
-            print(f"✅ Inserted material with ID: {doc_id}")
+    TEACHING APPROACH:
+    - AUTHENTICITY: Teach natives’ actual speech.
+    - PERSONALIZATION: For beginners (level {level}, week {week}), lean on {language}. For advanced, use more Arabic.
+    - EXAMPLES: Realistic usage.
+    - PRONUNCIATION: Hebrew transliteration for Arabic.
+    - DIALOGUES: Use ONLY vocabulary from materials.
+""")
 
-        print("🎉 'materials' collection seeding complete.\n")
+def initialize_firestore():
+    """Initializes the Firebase Admin SDK."""
+    cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
+    firebase_admin.initialize_app(cred)
+    return firestore.client()
 
-        # -------------------------
-        # 2) Insert Example User
-        # -------------------------
-        users_coll = db.collection('users')
-        example_user_id = "test_user_123"
-        example_user_data = {
-            "isPremium": False,
-            "totalMessages": {
-                "03_25": 5,
-                "04_25": 0
-            },
-            "createdAt": "2025-01-01T00:00:00Z"
-        }
+def seed_prompt_config(db):
+    """
+    Creates or overwrites the promptConfig document
+    under the 'settings' collection.
+    """
+    doc_ref = db.collection("settings").document("promptConfig")
+    doc_ref.set({
+        "template": DEFAULT_PROMPT
+    }, merge=True)
+    print("✔️  /settings/promptConfig is now set with the default template.")
 
-        user_doc = users_coll.document(example_user_id).get()
-        if not user_doc.exists:
-            users_coll.document(example_user_id).set(example_user_data)
-            print(f"✅ Inserted example user: {example_user_id}")
-        else:
-            print(f"⚡ User {example_user_id} already exists. No changes made.")
+    placeholder_doc = db.collection("contacts").document("placeholder_contact")
+    placeholder_doc.set({
+    "firstName":      "",                        # string
+    "lastName":       "",                        # string
+    "email":          "",                        # string
+    "message":        "",                        # string
+    "createdAt":      firestore.SERVER_TIMESTAMP # server-side timestamp
+})
 
-        print("🎉 'users' collection setup done.\n")
-
-        # -------------------------
-        # 3) Ensure ChatLogs Collection
-        # -------------------------
-        chat_logs_coll = db.collection('chatLogs')
-        placeholder_doc_id = "placeholder"
-        if not chat_logs_coll.document(placeholder_doc_id).get().exists:
-            chat_logs_coll.document(placeholder_doc_id).set({"message": "This is a placeholder."})
-            print("✅ Inserted placeholder in 'chatLogs' collection.")
-        else:
-            print("⚡ 'chatLogs' placeholder already exists. No changes made.")
-
-        print("🎉 Firestore seeding complete!")
-
-    except Exception as e:
-        print(f"❌ Error seeding database: {e}")
-
+print("✅ ‘contacts’ collection created (with placeholder_contact document).")
 if __name__ == "__main__":
-    seed_database()
+    print("Initializing Firestore client…")
+    db = initialize_firestore()
+    print("Seeding /settings/promptConfig…")
+    seed_prompt_config(db)
+    print("Done.")

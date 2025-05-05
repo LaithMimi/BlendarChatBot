@@ -222,7 +222,15 @@ const ChatLogs: React.FC = () => {
         : [...prev, sessionId]
     );
   };
-  
+   // Fetch contacts
+   const { data: contacts, isLoading: isContactsLoading } = useQuery<Contact[]>({
+    queryKey: ['contacts'],
+    queryFn: async () => {
+      const snap = await getDocs(collection(db, 'contacts'));
+      return snap.docs.map(d => ({ id: d.id, ...d.data() } as Contact));
+    }
+  });
+
   const exportToCSV = () => {
     let csvContent = "data:text/csv;charset=utf-8,";
     csvContent += "Session ID,User ID,User Name,Message Time,Sender,Message Content\n";
@@ -421,6 +429,7 @@ const ChatLogs: React.FC = () => {
               <TabsTrigger value="chat-logs">Chat Logs</TabsTrigger>
               <TabsTrigger value="upload-materials">Upload Teaching Materials</TabsTrigger>
               <TabsTrigger value="view-materials">View Materials</TabsTrigger>
+              <TabsTrigger value="contacts">View Contact Us</TabsTrigger>
               <TabsTrigger value="prompt-editor">Prompt Editor</TabsTrigger>
             </TabsList>
             <TabsContent value="chat-logs">
@@ -868,6 +877,37 @@ const ChatLogs: React.FC = () => {
                     : "Save"
                   }
                 </Button>
+              </div>
+            </TabsContent>
+            <TabsContent value="contacts">
+              <div dir="rtl" className="bg-white/70 dark:bg-black/20 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-border">
+                <h2 className="text-2xl font-bold mb-4">טבלת פניות</h2>
+                {isContactsLoading ? (
+                  <Loader2 className="animate-spin h-8 w-8 mx-auto text-brand-bordeaux" />
+                ) : (
+                  <table className="w-full text-right" dir="rtl">
+                    <thead className="bg-gray-50 dark:bg-gray-800/30">
+                      <tr>
+                        <th className="px-4 py-2">שם פרטי</th>
+                        <th className="px-4 py-2">שם משפחה</th>
+                        <th className="px-4 py-2">אימייל</th>
+                        <th className="px-4 py-2">הודעה</th>
+                        <th className="px-4 py-2">תאריך יצירה</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {contacts?.map(c => (
+                        <tr key={c.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/20">
+                          <td className="px-4 py-2">{c.firstName}</td>
+                          <td className="px-4 py-2">{c.lastName}</td>
+                          <td className="px-4 py-2">{c.email}</td>
+                          <td className="px-4 py-2">{c.message}</td>
+                          <td className="px-4 py-2">{c.createdAt?.seconds ? format(new Date(c.createdAt.seconds * 1000), 'PPP p') : '-'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             </TabsContent>
           </Tabs>

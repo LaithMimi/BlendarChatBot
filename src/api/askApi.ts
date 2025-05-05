@@ -36,12 +36,12 @@ const CHATLOG_API_URL = import.meta.env.MODE === 'production'
   : "http://127.0.0.1:5001/arabicchatbot-24bb2/us-central1/api_chatlogs";
 
 
-export interface ContactFormData {
-  firstName: string;
-  lastName:  string;
-  email:     string;
-  message:   string;
-}
+  export interface ContactFormData {
+    firstName: string;
+    lastName:  string;
+    email:     string;
+    message:   string;
+  }
 /**
  * Fetch the current system prompt template.
  */
@@ -67,7 +67,6 @@ export async function updatePromptTemplate(template: string): Promise<void> {
  * @throws if the write fails
  */
 export async function submitContact(formData: ContactFormData): Promise<void> {
-  // trim everything
   const payload = {
     firstName: formData.firstName.trim(),
     lastName:  formData.lastName.trim(),
@@ -75,12 +74,8 @@ export async function submitContact(formData: ContactFormData): Promise<void> {
     message:   formData.message.trim(),
     createdAt: serverTimestamp()
   };
-
-  // get an auto‐ID document ref in `contacts`
   const contactsRef = collection(db, 'contacts');
-  const newDocRef   = doc(contactsRef);
-
-  // write it
+  const newDocRef = doc(contactsRef);
   await setDoc(newDocRef, payload);
 }
 
