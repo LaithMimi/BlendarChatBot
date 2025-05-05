@@ -34,6 +34,9 @@ const Header: React.FC<HeaderProps> = ({
   const { isAuthenticated, logout } = useAuth();
 
   const handleLogoClick = () => {
+    if (logoClickCount ==0) {
+      navigate('/');
+    }
     setLogoClickCount(prevCount => prevCount + 1);
     if (logoClickCount + 1 === 5) {
       setIsPasswordDialogOpen(true);

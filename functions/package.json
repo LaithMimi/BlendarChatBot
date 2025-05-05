@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "@tanstack/react-query": "^5.72.2",
-    "date-fns": "^4.1.0",
-    "firebase-functions": "^6.3.2",
-    "framer-motion": "^12.6.3"
-  }
-}
