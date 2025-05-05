@@ -35,6 +35,38 @@ const CHATLOG_API_URL = import.meta.env.MODE === 'production'
   ? "https://api-chatlogs-jfys4ba3ka-uc.a.run.app"
   : "http://127.0.0.1:5001/arabicchatbot-24bb2/us-central1/api_chatlogs";
 
+  export async function submitContact(formData: ContactFormData): Promise<void> {
+    const payload = {
+      firstName: formData.firstName.trim(),
+      lastName:  formData.lastName.trim(),
+      email:     formData.email.trim(),
+      message:   formData.message.trim(),
+      createdAt: serverTimestamp()
+    };
+    const contactsRef = collection(db, 'contacts');
+    const newDocRef = doc(contactsRef);
+    await setDoc(newDocRef, payload);
+  }
+ /**
+ * Fetch the current system prompt template.
+ */
+export async function fetchPromptTemplate(): Promise<{ template: string }> {
+  const docRef = doc(db, 'settings', 'promptConfig');
+  const snap = await getDoc(docRef);
+  if (snap.exists()) {
+    return { template: snap.data().template as string };
+  }
+  return { template: '' };
+}
+
+/**
+ * Overwrite the system prompt template.
+ */
+export async function updatePromptTemplate(template: string): Promise<void> {
+  const docRef = doc(db, 'settings', 'promptConfig');
+  await setDoc(docRef, { template }, { merge: true });
+}
+
 /**
  * Sends a question to the chatbot API and returns the response
  */
