@@ -42,7 +42,25 @@ export interface ContactFormData {
   email:     string;
   message:   string;
 }
+/**
+ * Fetch the current system prompt template.
+ */
+export async function fetchPromptTemplate(): Promise<{ template: string }> {
+  const docRef = doc(db, 'settings', 'promptConfig');
+  const snap = await getDoc(docRef);
+  if (snap.exists()) {
+    return { template: snap.data().template as string };
+  }
+  return { template: '' };
+}
 
+/**
+ * Overwrite the system prompt template.
+ */
+export async function updatePromptTemplate(template: string): Promise<void> {
+  const docRef = doc(db, 'settings', 'promptConfig');
+  await setDoc(docRef, { template }, { merge: true });
+}
 /**
  * Save a “Contact Us” submission into Firestore.
  *

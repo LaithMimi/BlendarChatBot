@@ -25,6 +25,7 @@ import Footer from '@/components/Footer';
 import UploadJsonToFirestore from '../components/UploadJsonToFirestore';
 import { DateRange } from 'react-day-picker';
 import { fetchChatLogs, ChatSession, Message, deleteChat, deleteAllChats } from '@/api/askApi';
+import { fetchPromptTemplate, updatePromptTemplate } from '@/api/askApi';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
 import { collection, getDocs } from 'firebase/firestore';
@@ -40,6 +41,26 @@ interface Material {
   level?: string;
   week?: string;
 }
+const defaultPrompt = `You are 'Laith', an expert Levantine Arabic dialect tutor. Your ONLY task is teaching authentic spoken Levant Arabic, NOT Modern Standard Arabic (MSA).
+
+STRICT RULES:
+1. ONLY use information from the provided reference materials.
+2. NEVER use MSA (فصحى)—exclusively Levantine dialect (لهجة شامية).
+3. IGNORE unrelated questions.
+
+Student profile:
+- Level: {level}
+- Week: {week}
+- Gender: {gender}
+- Language interface: {language}
+
+TEACHING APPROACH:
+- AUTHENTICITY: Teach natives’ actual speech.
+- PERSONALIZATION: For beginners (level {level}, week {week}), lean on {language}. For advanced, use more Arabic.
+- EXAMPLES: Realistic usage.
+- PRONUNCIATION: Hebrew transliteration for Arabic.
+- DIALOGUES: Use ONLY vocabulary from materials.
+`;
 
 const ChatLogs: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -58,6 +79,42 @@ const ChatLogs: React.FC = () => {
   const [isDeleteAllDialogOpen, setIsDeleteAllDialogOpen] = useState(false);
   const [isDeletingAll, setIsDeletingAll] = useState(false);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  // loadedPrompt holds what's currently saved (or default)
+  const [loadedPrompt, setLoadedPrompt] = useState<string>(defaultPrompt);
+  // promptTemplate is the editable value
+  const [promptTemplate, setPromptTemplate] = useState<string>(defaultPrompt);
+  const [isUpdatingPrompt, setIsUpdatingPrompt] = useState(false);
+
+  // on mount, pull from Firestore; if empty, stay with defaultPrompt
+  useEffect(() => {
+    fetchPromptTemplate()
+      .then(data => {
+        const initial = data.template?.trim() ? data.template : defaultPrompt;
+        setLoadedPrompt(initial);
+        setPromptTemplate(initial);
+      })
+      .catch(() =>
+        toast({ title: "Failed to load prompt", variant: "destructive" })
+      );
+  }, []);
+
+  // save & immediately reflect
+  async function onSavePrompt() {
+    if (promptTemplate === loadedPrompt) {
+      toast({ title: "No changes to save", variant: "warning" });
+      return;
+    }
+    setIsUpdatingPrompt(true);
+    try {
+      await updatePromptTemplate(promptTemplate);
+      setLoadedPrompt(promptTemplate);
+      toast({ title: "Prompt updated!" });
+    } catch {
+      toast({ title: "Error updating prompt", variant: "destructive" });
+    } finally {
+      setIsUpdatingPrompt(false);
+    }
+  }
   
   const { toast } = useToast();
   
@@ -364,6 +421,7 @@ const ChatLogs: React.FC = () => {
               <TabsTrigger value="chat-logs">Chat Logs</TabsTrigger>
               <TabsTrigger value="upload-materials">Upload Teaching Materials</TabsTrigger>
               <TabsTrigger value="view-materials">View Materials</TabsTrigger>
+              <TabsTrigger value="prompt-editor">Prompt Editor</TabsTrigger>
             </TabsList>
             <TabsContent value="chat-logs">
               <div className="bg-white/70 dark:bg-black/20 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-border mb-8">
@@ -786,6 +844,30 @@ const ChatLogs: React.FC = () => {
                     Showing {filteredMaterials.length} of {materials.length} materials
                   </div>
                 )}
+              </div>
+            </TabsContent>
+                <TabsContent value="prompt-editor">
+              <div className="p-4 bg-white/70 rounded-xl shadow-sm">
+                <h2 className="text-2xl font-bold mb-4">Edit Chatbot Prompt</h2>
+
+                <h3 className="text-lg font-medium mb-2">Current Prompt:</h3>
+                <div className="p-3 mb-6 bg-gray-50 border rounded whitespace-pre-wrap font-mono text-sm">
+                  {loadedPrompt}
+                </div>
+
+                <h3 className="text-lg font-medium mb-2">New Prompt:</h3>
+                <textarea
+                  className="w-full h-64 p-2 border rounded mb-4 font-mono text-sm"
+                  value={promptTemplate}
+                  onChange={e => setPromptTemplate(e.target.value)}
+                />
+
+                <Button onClick={onSavePrompt} disabled={isUpdatingPrompt}>
+                  {isUpdatingPrompt
+                    ? <Loader2 className="animate-spin h-4 w-4 mr-2" />
+                    : "Save"
+                  }
+                </Button>
               </div>
             </TabsContent>
           </Tabs>

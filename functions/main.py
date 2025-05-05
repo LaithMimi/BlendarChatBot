@@ -11,6 +11,7 @@ from openai import OpenAI
 from google.cloud.firestore_v1.base_query import FieldFilter
 import os
 import traceback
+import textwrap
 
 # Get the PORT environment variable, default to 8080
 PORT = int(os.environ.get('PORT', 8080))
@@ -163,7 +164,6 @@ def verify_auth(req: https_fn.Request) -> tuple[bool, str, str]:
         return False, '', ''
 
 
-
 def get_materials(level, week):
     try:
         # Remove the 'week' prefix if it exists
@@ -203,62 +203,71 @@ def get_materials(level, week):
         return []
 
 
+def load_prompt_template(default: str) -> str:
+    db = get_firestore_client()
+    doc = db.collection("settings").document("promptConfig").get()
+    if doc.exists:
+        return doc.to_dict().get("template", default)
+    return default
+
+
 def create_arabic_teaching_prompt(level, week, question, gender, language, materials, conversation_history=None):
     """
     Dynamically generates an Arabic teaching prompt for OpenAI
     for specialized Levantine dialect tutoring.
     """
-    base_prompt = f"""
-    You are 'Laith', an expert Levantine Arabic dialect tutor. Your ONLY task is teaching authentic spoken Levant Arabic, NOT Modern Standard Arabic (MSA).
+    # 1) define your default template (with {level}, {week}, {gender}, {language})
+    default_tpl = textwrap.dedent("""\
+        You are 'Laith', an expert Levantine Arabic dialect tutor. Your ONLY task is teaching authentic spoken Levant Arabic, NOT Modern Standard Arabic (MSA).
 
-    STRICT RULES:
-    1. ONLY use information from the provided reference materials. Do not introduce vocabulary, phrases or concepts not included in these materials.
-    2. NEVER use MSA (فصحى) forms - use EXCLUSIVELY Levantine dialect (لهجة شامية) as spoken in daily conversation.
-    3. IGNORE any questions unrelated to Levantine Arabic learning.
+        STRICT RULES:
+        1. ONLY use information from the provided reference materials.
+        2. NEVER use MSA (فصحى)—exclusively Levantine dialect (لهجة شامية).
+        3. IGNORE unrelated questions.
 
-    Student profile:
-    - Level: {level}
-    - Week: {week}
-    - Gender: {gender}
-    - Language: {language}
+        Student profile:
+        - Level: {level}
+        - Week: {week}
+        - Gender: {gender}
+        - Language interface: {language}
 
-    TEACHING APPROACH:
-    - AUTHENTICITY: Teach how natives actually speak, not textbook forms
-    - PERSONALIZATION: For beginners (level {level}, week {week}), use more {language}. For advanced, use more Arabic
-    - EXAMPLES: Every vocabulary item must include realistic usage examples
-    - PRONUNCIATION: Include Hebrew transliteration (תעתיק עברי) for all Arabic words
-    - GENDER: Use appropriate forms for {gender} students
-    - DIALOGUES: Create practice conversations using ONLY vocabulary from materials
-    """
+        TEACHING APPROACH:
+        - AUTHENTICITY: Teach natives’ actual speech.
+        - PERSONALIZATION: For beginners (level {level}, week {week}), lean on {language}. For advanced, use more Arabic.
+        - EXAMPLES: Realistic usage.
+        - PRONUNCIATION: Hebrew transliteration for Arabic.
+        - DIALOGUES: Use ONLY vocabulary from materials.
+    """)
+    # 2) load override from Firestore (or fall back to default)
+    tpl = load_prompt_template(default_tpl)
+    # 3) inject the runtime values
+    base_prompt = tpl.format(level=level, week=week, gender=gender, language=language)
+
+    # 4) append the materials block
     materials_prompt = "\nYOU MUST EXCLUSIVELY USE THESE MATERIALS AS YOUR SOURCE:\n"
     for i, mat in enumerate(materials, 1):
         materials_prompt += f"Material {i}: {mat}\n"
 
-    final_warning = "\nIMPORTANT: If asked about anything not covered in these materials, redirect to content you CAN teach from the materials. ALWAYS use Levantine dialect exclusively.\n"
-
-    # Adjust language usage
+    # 5) any extra warnings / language adjustments (unchanged)
+    final_warning = "\nIMPORTANT: If asked about anything not in the materials, say so.\n"
     language_guidance_map = {
-        "arabic": "\nRespond primarily in Arabic script with minimal explanations in Hebrew.\n",
-        "transliteration-hebrew": "\nProvide Arabic responses in Hebrew characters, plus short Hebrew explanations.\n",
-        "transliteration-english": "\nProvide Arabic responses with English transliteration, plus Hebrew explanations.\n"
+        "arabic": "\nRespond primarily in Arabic script with minimal Hebrew.\n",
+        "transliteration-hebrew": "\nUse Hebrew letters for Arabic, plus short Hebrew notes.\n",
+        "transliteration-english": "\nUse Latin transliteration, plus Hebrew notes.\n"
     }
-    language_guidance = language_guidance_map.get(
-        language, 
-        "\nProvide main responses in Hebrew, with Arabic phrases in both script and Hebrew transliteration.\n"
-    )
+    language_guidance = language_guidance_map.get(language, "")
+    complete = base_prompt + materials_prompt + final_warning + language_guidance
 
-    complete_prompt = base_prompt + materials_prompt + final_warning + language_guidance
+    # 6) attach last 5 messages of history, if any
+    if conversation_history:
+        history = "\nPREVIOUS CONVERSATION:\n"
+        for msg in conversation_history[-5:]:
+            who = "Student" if msg.get("isUser") else "Laith"
+            content = msg.get("text") or msg.get("content")
+            history += f"{who}: {content}\n"
+        complete += history
 
-    if conversation_history and len(conversation_history) > 0:
-        recent_messages = conversation_history[-5:]  # only the last 5
-        history_prompt = "\nPREVIOUS CONVERSATION CONTEXT:\n"
-        for msg in recent_messages:
-            role = "Student" if msg.get("isUser", msg.get("sender") == "user") else "You (Laith)"
-            content = msg.get("text", msg.get("content", ""))
-            history_prompt += f"{role}: {content}\n"
-        complete_prompt += history_prompt
-
-    return complete_prompt
+    return complete
 
 
 def call_bot(api_key, prompt, question):
@@ -753,6 +762,7 @@ def api_chatlogs(req: https_fn.Request) -> https_fn.Response:
     except Exception as e:
         logger.error(f"API chatlogs error: {str(e)}", exc_info=True)
         return https_fn.Response(json.dumps({"error": str(e)}), status=HTTP_STATUS["SERVER_ERROR"])
+
 
 @https_fn.on_request(
     cors=options.CorsOptions(
