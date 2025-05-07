@@ -16,18 +16,21 @@ const SelectTrigger = React.forwardRef<
     ref={ref}
     dir="auto"
     className={cn(
-      "flex h-10 w-full items-center justify-start rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+      // make the trigger relative so we can abs‐position the icon
+      "relative flex h-10 w-full items-center justify-start rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
       className
     )}
     {...props}
   >
-    {/* Icon first, left-aligned */}
+    {/* absolute‐position the chevron on the left */}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className="h-4 w-4 mr-2 opacity-50" />
+      <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
     </SelectPrimitive.Icon>
 
-    {/* Then the selected value/text */}
-    {children}
+    {/* push your text/value over so it doesn’t sit under the icon */}
+    <span className="ml-10 line-clamp-1">
+      {children}
+    </span>
   </SelectPrimitive.Trigger>
 ))
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
@@ -68,7 +71,7 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       position={position}
-      dir="ltr" // Changed from "auto" to "ltr" to force left-to-right layout
+      dir="ltr" // Force LTR layout for dropdown structure
       className={cn(
         "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
@@ -103,8 +106,8 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    dir="auto"
-    className={cn("py-1.5 px-2 text-sm font-semibold", className)}
+    dir="rtl" // Allow RTL text for labels
+    className={cn("py-1.5 px-2 text-sm font-semibold text-right", className)}
     {...props}
   />
 ))
@@ -116,21 +119,26 @@ const SelectItem = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <SelectPrimitive.Item
     ref={ref}
-    dir="ltr" // Changed from "auto" to "ltr" to force left-to-right layout
+    dir="ltr" // Force LTR layout for item structure
     className={cn(
       "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 px-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     {...props}
   >
-    <span className="absolute left-2 right-2 flex h-3.5 w-3.5 items-center justify-center">
+    {/* Icon on the left */}
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
         <Check className="h-4 w-4" />
       </SelectPrimitive.ItemIndicator>
     </span>
-    <SelectPrimitive.ItemText className="flex-1 pl-6 pr-6">
-      {children}
-    </SelectPrimitive.ItemText>
+    
+    {/* Text on the right, with RTL direction */}
+    <div className="w-full pr-6 pl-8 text-right" dir="rtl">
+      <SelectPrimitive.ItemText>
+        {children}
+      </SelectPrimitive.ItemText>
+    </div>
   </SelectPrimitive.Item>
 ))
 SelectItem.displayName = SelectPrimitive.Item.displayName

@@ -75,7 +75,7 @@ const AdminHeader: React.FC = () => {
           <DialogHeader>
             <DialogTitle>Admin Access</DialogTitle>
             <DialogDescription>
-              Enter the admin password to access chat logs.
+              Enter the admin password to access The Dashboard.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handlePasswordSubmit}>
