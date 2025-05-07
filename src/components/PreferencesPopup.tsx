@@ -197,7 +197,7 @@ const PreferencesPopup: React.FC<PreferencesPopupProps> = ({ onSave, isOpen }) =
           
           <div className="space-y-2">
             <Label htmlFor="language" className="text-brand-darkGray dark:text-white/90">
-              שפה
+              השפה של לית'
             </Label>
             <Select 
               value={preferences.language} 
