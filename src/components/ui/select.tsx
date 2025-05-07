@@ -14,23 +14,20 @@ const SelectTrigger = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}
-    dir="ltr" // Changed from "auto" to "ltr" to force left-to-right layout
+    dir="auto"
     className={cn(
-      // make the trigger relative so we can abs-position the icon
-      "relative flex h-10 w-full items-center justify-start rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+      "flex h-10 w-full items-center justify-start rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
       className
     )}
     {...props}
   >
-    {/* absolute-position the chevron on the left */}
+    {/* Icon first, left-aligned */}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
+      <ChevronDown className="h-4 w-4 mr-2 opacity-50" />
     </SelectPrimitive.Icon>
 
-    {/* push your text/value over so it doesn't sit under the icon */}
-    <span className="ml-10 line-clamp-1">
-      {children}
-    </span>
+    {/* Then the selected value/text */}
+    {children}
   </SelectPrimitive.Trigger>
 ))
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
@@ -71,7 +68,7 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       position={position}
-      dir="auto"
+      dir="ltr" // Changed from "auto" to "ltr" to force left-to-right layout
       className={cn(
         "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
@@ -119,7 +116,7 @@ const SelectItem = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <SelectPrimitive.Item
     ref={ref}
-    dir="auto"
+    dir="ltr" // Changed from "auto" to "ltr" to force left-to-right layout
     className={cn(
       "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 px-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
