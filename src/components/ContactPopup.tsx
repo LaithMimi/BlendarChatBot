@@ -77,41 +77,41 @@ const Contact: React.FC = () => {
       {/* Contact Button */}
       <button
         onClick={handleOpen}
-        className="w-full sm:w-auto bg-transparent border-2 border-white text-white text-lg py-3 px-12 rounded-full transition-transform transform hover:scale-105 hover:bg-white/10 flex items-center gap-2"
+        className="w-full sm:w-auto bg-transparent border-2 border-white text-white text-base md:text-lg py-2 md:py-3 px-6 md:px-12 rounded-full transition-transform transform hover:scale-105 hover:bg-white/10 flex items-center justify-center sm:justify-start gap-2"
         aria-label="צור קשר"
       >
         צור קשר
-        <ExternalLink className="h-5 w-5" />
+        <ExternalLink className="h-4 w-4 md:h-5 md:w-5" />
       </button>
 
       {/* Contact Popup */}
       {open && (
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={e => e.target === e.currentTarget && handleClose()}
         >
           <div
-            className="relative max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 animate-scale-in rtl"
+            className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 md:p-6 animate-scale-in rtl"
             onClick={e => e.stopPropagation()}
           >
             <button
               onClick={handleClose}
-              className="absolute top-3 left-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="absolute top-2 md:top-3 left-2 md:left-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               aria-label="סגור"
             >
               <X className="h-5 w-5" />
             </button>
 
-            <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white text-right">
+            <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4 text-gray-900 dark:text-white text-right">
               צור קשר
             </h3>
 
             {submitted ? (
-              <div className="py-8 text-center">
-                <div className="flex justify-center mb-4">
-                  <div className="h-16 w-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+              <div className="py-6 md:py-8 text-center">
+                <div className="flex justify-center mb-3 md:mb-4">
+                  <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
                     <svg
-                      className="h-8 w-8 text-green-600 dark:text-green-300"
+                      className="h-6 w-6 md:h-8 md:w-8 text-green-600 dark:text-green-300"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -125,18 +125,18 @@ const Contact: React.FC = () => {
                     </svg>
                   </div>
                 </div>
-                <p className="text-green-600 dark:text-green-400 font-medium text-lg">
+                <p className="text-green-600 dark:text-green-400 font-medium text-base md:text-lg">
                   ✅ ההודעה נשלחה בהצלחה!
                 </p>
-                <p className="text-gray-500 dark:text-gray-400 mt-2">
+                <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm md:text-base">
                   נחזור אליך בהקדם האפשרי
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4 text-right">
+              <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4 text-right">
                 {/* First Name */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     שם פרטי <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -144,7 +144,7 @@ const Contact: React.FC = () => {
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border ${
+                    className={`w-full px-3 md:px-4 py-2 text-sm md:text-base border ${
                       errors.firstName
                         ? 'border-red-500'
                         : 'border-gray-300 dark:border-gray-600'
@@ -152,7 +152,7 @@ const Contact: React.FC = () => {
                     dir="rtl"
                   />
                   {errors.firstName && (
-                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                    <p className="mt-1 text-xs md:text-sm text-red-600 dark:text-red-400">
                       {errors.firstName}
                     </p>
                   )}
@@ -160,7 +160,7 @@ const Contact: React.FC = () => {
 
                 {/* Last Name */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     שם משפחה <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -168,7 +168,7 @@ const Contact: React.FC = () => {
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border ${
+                    className={`w-full px-3 md:px-4 py-2 text-sm md:text-base border ${
                       errors.lastName
                         ? 'border-red-500'
                         : 'border-gray-300 dark:border-gray-600'
@@ -176,7 +176,7 @@ const Contact: React.FC = () => {
                     dir="rtl"
                   />
                   {errors.lastName && (
-                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                    <p className="mt-1 text-xs md:text-sm text-red-600 dark:text-red-400">
                       {errors.lastName}
                     </p>
                   )}
@@ -184,7 +184,7 @@ const Contact: React.FC = () => {
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     אימייל <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -192,7 +192,7 @@ const Contact: React.FC = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full px-4 pyro-2 border ${
+                    className={`w-full px-3 md:px-4 py-2 text-sm md:text-base border ${
                       errors.email
                         ? 'border-red-500'
                         : 'border-gray-300 dark:border-gray-600'
@@ -200,7 +200,7 @@ const Contact: React.FC = () => {
                     dir="rtl"
                   />
                   {errors.email && (
-                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                    <p className="mt-1 text-xs md:text-sm text-red-600 dark:text-red-400">
                       {errors.email}
                     </p>
                   )}
@@ -208,15 +208,15 @@ const Contact: React.FC = () => {
 
                 {/* Message */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     הודעה <span className="text-red-500">*</span>
                   </label>   
                   <textarea
-                    rows={4}
+                    rows={3}
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border ${
+                    className={`w-full px-3 md:px-4 py-2 text-sm md:text-base border ${
                       errors.message
                         ? 'border-red-500'
                         : 'border-gray-300 dark:border-gray-600'
@@ -224,7 +224,7 @@ const Contact: React.FC = () => {
                     dir="rtl"
                   />
                   {errors.message && (
-                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                    <p className="mt-1 text-xs md:text-sm text-red-600 dark:text-red-400">
                       {errors.message}
                     </p>
                   )}
@@ -232,14 +232,14 @@ const Contact: React.FC = () => {
 
                 {/* Submission Error */}
                 {errors.submit && (
-                  <p className="mt-1 text-sm text-red-600">{errors.submit}</p>
+                  <p className="mt-1 text-xs md:text-sm text-red-600">{errors.submit}</p>
                 )}
 
                 {/* Submit Button */}
-                <div className="flex justify-start pt-2">
+                <div className="flex justify-start pt-1 md:pt-2">
                   <button
                     type="submit"
-                    className="bg-brand-bordeaux hover:bg-brand-bordeaux/90 text-white px-6 py-2 rounded-md font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-brand-bordeaux focus:ring-offset-2"
+                    className="bg-brand-bordeaux hover:bg-brand-bordeaux/90 text-white px-4 md:px-6 py-1.5 md:py-2 text-sm md:text-base rounded-md font-medium md:font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-brand-bordeaux focus:ring-offset-2"
                   >
                     שלח
                   </button>
