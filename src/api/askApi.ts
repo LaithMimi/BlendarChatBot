@@ -2,6 +2,7 @@
 import { db } from '../config/firebaseConfig';
 import { collection, doc, getDoc, setDoc, query, where, getDocs } from 'firebase/firestore';
 import { deleteDoc } from 'firebase/firestore';
+import { serverTimestamp } from "firebase/firestore";
 
 export interface Message {
   id: string;
