@@ -53,9 +53,6 @@ const PreferencesPopup: React.FC<PreferencesPopupProps> = ({ onSave, isOpen }) =
     }));
   };
 
-
-
-
   const handleSave = async () => {
     try {
       localStorage.setItem('userPreferences', JSON.stringify(preferences));
@@ -95,34 +92,33 @@ const PreferencesPopup: React.FC<PreferencesPopupProps> = ({ onSave, isOpen }) =
   return (
     <Dialog open={isOpen} onOpenChange={(open) => {
       if (!open) onSave(preferences);
-      
     }}>
       <DialogContent 
-        className="sm:max-w-md backdrop-blur-lg bg-white/90 dark:bg-brand-darkGray/90 border border-brand-bordeaux/20 shadow-xl "
+        className="w-full max-w-sm mx-auto sm:max-w-md md:max-w-lg backdrop-blur-lg bg-white/90 dark:bg-brand-darkGray/90 border border-brand-bordeaux/20 shadow-xl p-4 sm:p-6 rounded-xl"
         dir="rtl"
       >
-        <DialogHeader>
-          <DialogTitle className="font-alef text-2xl font-bold text-brand-darkGray dark:text-white flex items-center ">
-            <span className="bg-brand-bordeaux text-white p-1 rounded-md ml-2 ">
+        <DialogHeader className="space-y-2">
+          <DialogTitle className="font-alef text-xl sm:text-2xl font-bold text-brand-darkGray dark:text-white flex items-center flex-wrap gap-2">
+            <span className="bg-brand-bordeaux text-white p-1 rounded-md">
               {preferences.name.charAt(0) || '?'}
             </span>
-            העדפות משתמש
+            <span>העדפות משתמש</span>
           </DialogTitle>
-            <DialogDescription dir="rtl">
+          <DialogDescription dir="rtl" className="text-sm sm:text-base">
             התאם אישית את חוויית הלמידה שלך עם ההגדרות הבאות
-            </DialogDescription>
+          </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-5 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="name" className="text-brand-darkGray dark:text-white/90">
+        <div className="space-y-4 py-3 sm:py-4 max-h-[60vh] overflow-y-auto">
+          <div className="space-y-1 sm:space-y-2">
+            <Label htmlFor="name" className="text-brand-darkGray dark:text-white/90 text-sm sm:text-base">
               שמך
             </Label>
             <Input 
               type="text" 
               id="name" 
               name="name"
-              className="glass-input focus:ring-2 focus:ring-brand-yellow/30" 
+              className="glass-input focus:ring-2 focus:ring-brand-yellow/30 text-sm sm:text-base rounded-lg" 
               placeholder="הכנס את שמך" 
               value={preferences.name}
               onChange={handleInputChange}
@@ -130,18 +126,18 @@ const PreferencesPopup: React.FC<PreferencesPopupProps> = ({ onSave, isOpen }) =
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="level" className="text-brand-darkGray dark:text-white/90">
+          <div className="space-y-1 sm:space-y-2">
+            <Label htmlFor="level" className="text-brand-darkGray dark:text-white/90 text-sm sm:text-base">
               רמת שליטה בערבית
             </Label>
             <Select 
               value={preferences.level} 
               onValueChange={(value) => handleSelectChange(value, 'level')}
             >
-              <SelectTrigger id="level" name="level" className="glass-input">
+              <SelectTrigger id="level" name="level" className="glass-input text-sm sm:text-base rounded-lg">
                 <SelectValue placeholder="בחר רמה" />
               </SelectTrigger>
-              <SelectContent className="bg-white/90 dark:bg-brand-darkGray/90 backdrop-blur-md border-brand-bordeaux/20">
+              <SelectContent className="bg-white/90 dark:bg-brand-darkGray/90 backdrop-blur-md border-brand-bordeaux/20 text-sm sm:text-base rounded-lg">
                 <SelectItem value="beginner">מתחיל</SelectItem>
                 <SelectItem value="intermediate">בינוני</SelectItem>
                 <SelectItem value="advanced">מתקדם</SelectItem>
@@ -150,18 +146,18 @@ const PreferencesPopup: React.FC<PreferencesPopupProps> = ({ onSave, isOpen }) =
             </Select>
           </div>
           
-          <div className="space-y-2">
-            <Label htmlFor="week" className="text-brand-darkGray dark:text-white/90">
+          <div className="space-y-1 sm:space-y-2">
+            <Label htmlFor="week" className="text-brand-darkGray dark:text-white/90 text-sm sm:text-base">
               שבוע
             </Label>
             <Select 
               value={preferences.week} 
               onValueChange={(value) => handleSelectChange(value, 'week')}
             >
-              <SelectTrigger id="week" name="week" className="glass-input">
+              <SelectTrigger id="week" name="week" className="glass-input text-sm sm:text-base rounded-lg">
                 <SelectValue placeholder="בחר שבוע" />
               </SelectTrigger>
-              <SelectContent className="bg-white/90 dark:bg-brand-darkGray/90 backdrop-blur-md border-brand-bordeaux/20">
+              <SelectContent className="bg-white/90 dark:bg-brand-darkGray/90 backdrop-blur-md border-brand-bordeaux/20 text-sm sm:text-base max-h-60 rounded-lg">
                 <SelectItem value="week01">שבוע 01</SelectItem>
                 <SelectItem value="week02">שבוע 02</SelectItem>
                 <SelectItem value="week03">שבוע 03</SelectItem>
@@ -177,36 +173,36 @@ const PreferencesPopup: React.FC<PreferencesPopupProps> = ({ onSave, isOpen }) =
             </Select>
           </div>
           
-          <div className="space-y-2">
-            <Label htmlFor="gender" className="text-brand-darkGray dark:text-white/90">
+          <div className="space-y-1 sm:space-y-2">
+            <Label htmlFor="gender" className="text-brand-darkGray dark:text-white/90 text-sm sm:text-base">
               מגדר
             </Label>
             <Select 
               value={preferences.gender} 
               onValueChange={(value) => handleSelectChange(value, 'gender')}
             >
-              <SelectTrigger id="gender" name="gender" className="glass-input">
+              <SelectTrigger id="gender" name="gender" className="glass-input text-sm sm:text-base rounded-lg">
                 <SelectValue placeholder="בחר מגדר" />
               </SelectTrigger>
-              <SelectContent className="bg-white/90 dark:bg-brand-darkGray/90 backdrop-blur-md border-brand-bordeaux/20">
+              <SelectContent className="bg-white/90 dark:bg-brand-darkGray/90 backdrop-blur-md border-brand-bordeaux/20 text-sm sm:text-base rounded-lg">
                 <SelectItem value="male">זכר</SelectItem>
                 <SelectItem value="female">נקבה</SelectItem>
               </SelectContent>
             </Select>
           </div>
           
-          <div className="space-y-2">
-            <Label htmlFor="language" className="text-brand-darkGray dark:text-white/90">
+          <div className="space-y-1 sm:space-y-2">
+            <Label htmlFor="language" className="text-brand-darkGray dark:text-white/90 text-sm sm:text-base">
               השפה של לית'
             </Label>
             <Select 
               value={preferences.language} 
               onValueChange={(value) => handleSelectChange(value, 'language')}
             >
-              <SelectTrigger id="language" name="language" className="glass-input">
+              <SelectTrigger id="language" name="language" className="glass-input text-sm sm:text-base rounded-lg">
                 <SelectValue placeholder="בחר שפה" />
               </SelectTrigger>
-              <SelectContent className="bg-white/90 dark:bg-brand-darkGray/90 backdrop-blur-md border-brand-bordeaux/20">
+              <SelectContent className="bg-white/90 dark:bg-brand-darkGray/90 backdrop-blur-md border-brand-bordeaux/20 text-sm sm:text-base rounded-lg">
                 <SelectItem value="arabic">العربية</SelectItem>
                 <SelectItem value="hebrew">תמלול</SelectItem>
                 <SelectItem value="english">תעתיק אנגלי</SelectItem>
@@ -215,10 +211,10 @@ const PreferencesPopup: React.FC<PreferencesPopupProps> = ({ onSave, isOpen }) =
           </div>
         </div>
         
-        <DialogFooter className="sm:justify-between flex flex-row gap-2 justify-end">
+        <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-between gap-2 mt-2 sm:mt-4">
           <Button 
             onClick={handleSave}
-            className="bg-brand-bordeaux hover:bg-brand-bordeaux/90 text-white"
+            className="bg-brand-bordeaux hover:bg-brand-bordeaux/90 text-white w-full sm:w-auto rounded-lg"
           >
             <CheckIcon className="h-4 w-4 ml-2" />
             שמור העדפות
@@ -226,7 +222,7 @@ const PreferencesPopup: React.FC<PreferencesPopupProps> = ({ onSave, isOpen }) =
           <Button
             variant="outline"
             onClick={() => onSave(preferences)}
-            className="border-brand-bordeaux/20 text-brand-darkGray dark:text-white hover:bg-brand-bordeaux/10"
+            className="border-brand-bordeaux/20 text-brand-darkGray dark:text-white hover:bg-brand-bordeaux/10 w-full sm:w-auto rounded-lg"
           >
             <XIcon className="h-4 w-4 ml-2" />
             ביטול
