@@ -14,20 +14,23 @@ const SelectTrigger = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}
-    dir="auto"
+    dir="ltr" // Changed from "auto" to "ltr" to force left-to-right layout
     className={cn(
-      "flex h-10 w-full items-center justify-start rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+      // make the trigger relative so we can abs-position the icon
+      "relative flex h-10 w-full items-center justify-start rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
       className
     )}
     {...props}
   >
-    {/* Icon first, left-aligned */}
+    {/* absolute-position the chevron on the left */}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className="h-4 w-4 mr-2 opacity-50" />
+      <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
     </SelectPrimitive.Icon>
 
-    {/* Then the selected value/text */}
-    {children}
+    {/* push your text/value over so it doesn't sit under the icon */}
+    <span className="ml-10 line-clamp-1">
+      {children}
+    </span>
   </SelectPrimitive.Trigger>
 ))
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
