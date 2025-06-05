@@ -199,3 +199,13 @@ Manage OpenAI API key:
 firebase functions:secrets:set OPENAI_API_KEY
 firebase functions:secrets:access OPENAI_API_KEY
 ```
+
+
+how to run in localhost:
+1- run -emulators :
+firebase emulators:start
+2-npm run dev
+
+if v
+npm run build
+firebase deploy --only hosting
