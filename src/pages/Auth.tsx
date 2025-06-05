@@ -1,59 +1,76 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import Footer from '@/components/Footer';
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
-import { Mail, User, Loader2, CheckCircle, Send, ArrowRight } from 'lucide-react';
-import { Label } from '@/components/ui/label';
-import Cookies from 'js-cookie';
+import Footer from "@/components/Footer";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import {
+  Mail,
+  User,
+  Loader2,
+  CheckCircle,
+  Send,
+  ArrowRight,
+} from "lucide-react";
+import { Label } from "@/components/ui/label";
+import Cookies from "js-cookie";
 import { FcGoogle } from "react-icons/fc"; // Google Icon
 
 const Auth: React.FC = () => {
-  const [step, setStep] = useState<'email' | 'name' | 'sent'>('email');
+  const [step, setStep] = useState<"email" | "name" | "sent">("email");
   const [loading, setLoading] = useState(false);
-  const [localUserName, setLocalUserName] = useState('');
-  
-  const { 
-    email, 
-    setEmail, 
+  const [localUserName, setLocalUserName] = useState("");
+  const [isFirstTime, setIsFirstTime] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+  const {
+    email,
+    setEmail,
     setUserName,
-    currentUser, 
-    isAuthenticated, 
-    googleSignIn, 
+    currentUser,
+    isAuthenticated,
+    googleSignIn,
     sendEmailLink,
-    completeEmailSignIn
+    completeEmailSignIn,
   } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Store auth data securely
   const storeAuthData = (data: { email: string; userName: string }) => {
     // Store in cookie
-    Cookies.set('authData', JSON.stringify(data), { secure: true, sameSite: 'strict' });
-    
+    Cookies.set("authData", JSON.stringify(data), {
+      secure: true,
+      sameSite: "strict",
+    });
+
     // Also store in sessionStorage as backup
     try {
-      sessionStorage.setItem('authData', JSON.stringify(data));
+      sessionStorage.setItem("authData", JSON.stringify(data));
     } catch (e) {
-      console.warn('Failed to store auth data in sessionStorage:', e);
+      console.warn("Failed to store auth data in sessionStorage:", e);
     }
   };
 
   // Check if this is a callback from email link
   useEffect(() => {
-    if (location.pathname === '/auth/complete') {
-      const storedEmail = localStorage.getItem('emailForSignIn');
+    if (location.pathname === "/auth/complete") {
+      const storedEmail = localStorage.getItem("emailForSignIn");
       if (storedEmail) {
         handleEmailLinkSignIn(storedEmail);
       } else {
         toast({
           title: "שגיאת אימות",
           description: "לא נמצאה כתובת אימייל מאוחסנת. נא להזין אימייל שוב.",
-          variant: "destructive"
+          variant: "destructive",
         });
       }
     }
@@ -68,14 +85,14 @@ const Auth: React.FC = () => {
         toast({
           title: "התחברות הצליחה",
           description: "התחברת בהצלחה באמצעות אימייל",
-          variant: "default"
+          variant: "default",
         });
-        navigate('/chat');
+        navigate("/chat");
       } else {
         toast({
           title: "התחברות נכשלה",
           description: "אירעה שגיאה בהתחברות. נסה שוב.",
-          variant: "destructive"
+          variant: "destructive",
         });
       }
     } catch (error) {
@@ -83,7 +100,7 @@ const Auth: React.FC = () => {
       toast({
         title: "שגיאת התחברות",
         description: "אירעה שגיאה בהתחברות. נסה שוב.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -91,24 +108,32 @@ const Auth: React.FC = () => {
   };
 
   const handleGoogleLogin = async () => {
+    if (!agreedToTerms) {
+      toast({
+        title: "יש לאשר את התנאים",
+        description: "אנא אשר שקראת את התנאים לפני התחברות עם Google.",
+        variant: "destructive",
+      });
+      return;
+    }
     setLoading(true);
     try {
       const success = await googleSignIn();
       if (success) {
         window.location.href = "/chat"; // Redirect after login
       } else {
-        toast({ 
-          title: "התחברות נכשלה", 
-          description: "לא ניתן להשלים את ההתחברות עם Google. אנא נסה שוב.", 
-          variant: "destructive" 
+        toast({
+          title: "התחברות נכשלה",
+          description: "לא ניתן להשלים את ההתחברות עם Google. אנא נסה שוב.",
+          variant: "destructive",
         });
       }
     } catch (error) {
       console.error("Error in Google login:", error);
-      toast({ 
-        title: "שגיאת התחברות", 
-        description: "אירעה שגיאה בזמן ההתחברות. אנא נסה שוב מאוחר יותר.", 
-        variant: "destructive" 
+      toast({
+        title: "שגיאת התחברות",
+        description: "אירעה שגיאה בזמן ההתחברות. אנא נסה שוב מאוחר יותר.",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -117,70 +142,89 @@ const Auth: React.FC = () => {
 
   useEffect(() => {
     if (isAuthenticated && currentUser) {
-      navigate('/chat');
+      navigate("/chat");
     }
   }, [isAuthenticated, currentUser, navigate]);
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!email || !email.includes('@')) {
-      toast({ 
-        title: "אימייל לא תקין", 
-        description: "אנא הכנס כתובת אימייל חוקית", 
-        variant: "destructive" 
+
+    if (!email || !email.includes("@")) {
+      toast({
+        title: "אימייל לא תקין",
+        description: "אנא הכנס כתובת אימייל חוקית",
+        variant: "destructive",
       });
       return;
     }
-    
+
+    const existingUser = localStorage.getItem(`userExists:${email}`);
+
+    if (!existingUser) {
+      // First-time user flow
+      setIsFirstTime(true);
+
+      if (!agreedToTerms) {
+        toast({
+          title: "יש לאשר את התנאים",
+          description: "אנא אשר שקראת את התנאים לפני המשך.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Store flag so next time the checkbox won't appear
+      localStorage.setItem(`userExists:${email}`, "true");
+    }
+
     // Continue to the name step
-    setStep('name');
+    setStep("name");
   };
 
   const handleNameSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!localUserName || !localUserName.trim()) {
-      toast({ 
-        title: "נדרש שם", 
-        description: "אנא הכנס את שמך", 
-        variant: "destructive" 
+      toast({
+        title: "נדרש שם",
+        description: "אנא הכנס את שמך",
+        variant: "destructive",
       });
       return;
     }
-    
+
     setLoading(true);
     try {
       // Set user name in auth context
       setUserName(localUserName);
-      
+
       // Store auth data with both email and username
       storeAuthData({ email, userName: localUserName });
-      
+
       // Save email for link authentication
-      localStorage.setItem('emailForSignIn', email);
-      
+      localStorage.setItem("emailForSignIn", email);
+
       // Send the authentication email
       const success = await sendEmailLink(email);
       if (success) {
-        setStep('sent');
-        toast({ 
-          title: "קישור נשלח", 
-          description: "קישור להתחברות נשלח לכתובת האימייל שלך", 
-          variant: "default" 
+        setStep("sent");
+        toast({
+          title: "קישור נשלח",
+          description: "קישור להתחברות נשלח לכתובת האימייל שלך",
+          variant: "default",
         });
       } else {
-        toast({ 
-          title: "השליחה נכשלה", 
-          description: "אירעה שגיאה בשליחת הקישור. אנא נסה שוב.", 
-          variant: "destructive" 
+        toast({
+          title: "השליחה נכשלה",
+          description: "אירעה שגיאה בשליחת הקישור. אנא נסה שוב.",
+          variant: "destructive",
         });
       }
     } catch (error) {
       console.error("Error sending email link:", error);
-      toast({ 
-        title: "שגיאת שליחה", 
-        description: "אירעה שגיאה בשליחת הקישור. אנא נסה שוב.", 
-        variant: "destructive" 
+      toast({
+        title: "שגיאת שליחה",
+        description: "אירעה שגיאה בשליחת הקישור. אנא נסה שוב.",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -193,23 +237,23 @@ const Auth: React.FC = () => {
 
   const getHeaderInfo = () => {
     switch (step) {
-      case 'email':
+      case "email":
         return {
           icon: <Mail className="h-8 w-8 text-brand-bordeaux" />,
           title: "התחברות למערכת",
-          description: "התחבר באמצעות אימייל או Google"
+          description: "התחבר באמצעות אימייל או Google",
         };
-      case 'name':
+      case "name":
         return {
           icon: <User className="h-8 w-8 text-brand-bordeaux" />,
           title: "הזן את שמך",
-          description: "איך לפנות אליך באפליקציה?"
+          description: "איך לפנות אליך באפליקציה?",
         };
-      case 'sent':
+      case "sent":
         return {
           icon: <CheckCircle className="h-8 w-8 text-brand-bordeaux" />,
           title: "בדוק את האימייל שלך",
-          description: "שלחנו קישור התחברות לאימייל שלך"
+          description: "שלחנו קישור התחברות לאימייל שלך",
         };
     }
   };
@@ -221,9 +265,16 @@ const Auth: React.FC = () => {
       <div className="flex-1 container max-w-md mx-auto py-12 px-4 flex flex-col items-center justify-center">
         <div className="flex flex-col items-center mb-8">
           <div className="p-3 bg-brand-yellow rounded-full mb-4 animate-float-slow shadow-lg">
-            <img src="/blendar.jpg" alt="Logo" className="h-20 w-20 rounded-full" />
+            <img
+              src="/blendar.jpg"
+              alt="Logo"
+              className="h-20 w-20 rounded-full"
+            />
           </div>
-          <h1 className="text-3xl font-bold text-center text-brand-darkGray dark:text-white mb-2" dir="rtl">
+          <h1
+            className="text-3xl font-bold text-center text-brand-darkGray dark:text-white mb-2"
+            dir="rtl"
+          >
             ברוכים הבאים ל-Blend.Ar
           </h1>
           <p className="text-sm text-center text-muted-foreground" dir="rtl">
@@ -247,10 +298,16 @@ const Auth: React.FC = () => {
           </CardHeader>
 
           <CardContent className="p-6 pt-0">
-            {step === 'email' && (
-              <form onSubmit={handleEmailSubmit} className="space-y-4" dir="rtl">
+            {step === "email" && (
+              <form
+                onSubmit={handleEmailSubmit}
+                className="space-y-4"
+                dir="rtl"
+              >
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium">כתובת אימייל</Label>
+                  <Label htmlFor="email" className="text-sm font-medium">
+                    כתובת אימייל
+                  </Label>
                   <div className="relative">
                     <Input
                       type="email"
@@ -264,7 +321,31 @@ const Auth: React.FC = () => {
                     />
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
-                  <p className="text-xs text-muted-foreground">נשלח קישור התחברות לכתובת זו</p>
+                  <p className="text-xs text-muted-foreground">
+                    נשלח קישור התחברות לכתובת זו
+                  </p>
+                  {/* {isFirstTime && (
+                    <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                      <input
+                        type="checkbox"
+                        id="terms"
+                        checked={agreedToTerms}
+                        onChange={(e) => setAgreedToTerms(e.target.checked)}
+                        className="accent-brand-bordeaux"
+                      />
+                      <Label htmlFor="terms" className="text-sm">
+                        קראתי ואישרתי את{" "}
+                        <a
+                          href="/terms"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline text-blue-600 hover:text-blue-800"
+                        >
+                          תנאי השימוש
+                        </a>
+                      </Label>
+                    </div>
+                  )} */}
                 </div>
 
                 <Button
@@ -284,7 +365,7 @@ const Auth: React.FC = () => {
                     </>
                   )}
                 </Button>
-                
+
                 <div className="relative w-full text-center my-4">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-gray-300 dark:border-gray-700"></div>
@@ -295,7 +376,7 @@ const Auth: React.FC = () => {
                     </span>
                   </div>
                 </div>
-                
+
                 <Button
                   onClick={handleGoogleLogin}
                   type="button"
@@ -305,13 +386,36 @@ const Auth: React.FC = () => {
                   <FcGoogle className="h-5 w-5" />
                   <span>התחבר עם Google</span>
                 </Button>
+
+                <div className="flex items-center space-x-2 rtl:space-x-reverse mt-2">
+                  <input
+                    type="checkbox"
+                    id="terms"
+                    checked={agreedToTerms}
+                    onChange={(e) => setAgreedToTerms(e.target.checked)}
+                    className="accent-brand-bordeaux"
+                  />
+                  <Label htmlFor="terms" className="text-sm">
+                    קראתי ואישרתי את{" "}
+                    <a
+                      href="/terms"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-blue-600 hover:text-blue-800"
+                    >
+                      תנאי השימוש
+                    </a>
+                  </Label>
+                </div>
               </form>
             )}
 
-            {step === 'name' && (
+            {step === "name" && (
               <form onSubmit={handleNameSubmit} className="space-y-4" dir="rtl">
                 <div className="space-y-2">
-                  <Label htmlFor="userName" className="text-sm font-medium">השם שלך</Label>
+                  <Label htmlFor="userName" className="text-sm font-medium">
+                    השם שלך
+                  </Label>
                   <div className="relative">
                     <Input
                       type="text"
@@ -324,7 +428,9 @@ const Auth: React.FC = () => {
                     />
                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
-                  <p className="text-xs text-muted-foreground">איך נפנה אליך באפליקציה?</p>
+                  <p className="text-xs text-muted-foreground">
+                    איך נפנה אליך באפליקציה?
+                  </p>
                 </div>
 
                 <Button
@@ -344,19 +450,19 @@ const Auth: React.FC = () => {
                     </>
                   )}
                 </Button>
-                
+
                 <Button
                   type="button"
                   variant="outline"
                   className="w-full mt-2"
-                  onClick={() => setStep('email')}
+                  onClick={() => setStep("email")}
                 >
                   חזור אחורה
                 </Button>
               </form>
             )}
 
-            {step === 'sent' && (
+            {step === "sent" && (
               <div className="space-y-6 text-center" dir="rtl">
                 <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-900/30">
                   <p className="text-green-800 dark:text-green-300">
@@ -366,7 +472,7 @@ const Auth: React.FC = () => {
                     אנא בדוק את תיבת הדואר הנכנס שלך ולחץ על הקישור להתחברות
                   </p>
                 </div>
-                
+
                 <Button
                   onClick={handleNameSubmit}
                   variant="outline"
@@ -382,9 +488,11 @@ const Auth: React.FC = () => {
                     "שלח קישור שוב"
                   )}
                 </Button>
-                
+
                 <div className="text-sm text-muted-foreground">
-                  <p>לא קיבלת? בדוק את תיקיית הספאם או השתמש בכתובת אימייל אחרת</p>
+                  <p>
+                    לא קיבלת? בדוק את תיקיית הספאם או השתמש בכתובת אימייל אחרת
+                  </p>
                 </div>
               </div>
             )}
