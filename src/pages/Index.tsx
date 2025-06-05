@@ -124,7 +124,7 @@ const Index = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, ease: "easeInOut" }}
             >
-            <span className="text-brand-bordeaux">ברוכים הבאים לבוט ללימוד ערבית</span> 
+            <span className="text-brand-bordeaux">ברוכים הבאים לבוט לימוד ערבית מדוברת</span> 
             </motion.h1>
             
 
