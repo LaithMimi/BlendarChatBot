@@ -99,7 +99,6 @@ Example of a recurring payment webhook from Meshulam:
 Function URL: https://on-user-purchase-jfys4ba3ka-uc.a.run.app
 """
 
-
 # Utility functions
 def get_utc_timestamp():
     """Generate a consistent UTC timestamp in ISO format"""
