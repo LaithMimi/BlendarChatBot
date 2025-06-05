@@ -124,7 +124,7 @@ const Index = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, ease: "easeInOut" }}
             >
-            <span className="text-brand-bordeaux">أهلاً وسهلاً في بوت تعلم العربي</span> 
+            <span className="text-brand-bordeaux">ברוכים הבאים לבוט ללימוד ערבית</span> 
             </motion.h1>
             
 
@@ -158,7 +158,7 @@ const Index = () => {
                 className="w-full sm:w-auto bg-transparent border-2 border-brand-darkGray dark:border-white text-brand-darkGray dark:text-white text-lg py-6 px-8 rounded-full transition-transform transform hover:scale-105 hover:bg-brand-darkGray/10 dark:hover:bg-white/10 flex items-center gap-2"
                 dir="rtl"
                 >
-                למד עוד
+                לאתר ראשי
                 <ExternalLink className="h-5 w-5 transform rotate-0" />
                 </Button>
             </a>

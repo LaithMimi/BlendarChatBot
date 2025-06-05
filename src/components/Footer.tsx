@@ -16,11 +16,11 @@ const Footer: React.FC = () => {
         <div className="flex flex-col items-center gap-1 text-center">
           <p className="text-sm font-medium text-brand-darkGray dark:text-white">צרו איתנו קשר</p>
           <a 
-            href="mailto:blendarabic@gmail.com" 
+            href="mailto:tech@blendarabic.com" 
             className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
           >
             <Mail className="h-4 w-4" />
-            blendarabic@gmail.com
+            tech@blendarabic.com
           </a>
         </div>
         
