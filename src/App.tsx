@@ -22,6 +22,7 @@ import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import SubscriptionCancel from "./pages/SubscriptionCancel";
 import { useAuth } from "./contexts/AuthContext";
 import TermsOfUse from "./pages/termsOfuse";
+import ChatWrapper from "./pages/ChatWrapper";
 
 // Enable React Router Future Flags
 const queryClient = new QueryClient();
@@ -68,11 +69,19 @@ const AppContent = () => {
           element={isAuthenticated ? <Navigate to="/chat" replace /> : <Auth />}
         />
         <Route path="/auth/complete" element={<AuthComplete />} />
-        <Route
+        {/* <Route
           path="/chat"
           element={
             <ProtectedRoute>
               <Chat />
+            </ProtectedRoute>
+          }
+        /> */}
+        <Route
+          path="/chat"
+          element={
+            <ProtectedRoute>
+              <ChatWrapper />
             </ProtectedRoute>
           }
         />

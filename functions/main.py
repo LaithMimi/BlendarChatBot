@@ -13,6 +13,11 @@ import os
 import traceback
 import textwrap
 
+#noor-
+from dotenv import load_dotenv
+load_dotenv()
+
+
 # Get the PORT environment variable, default to 8080
 PORT = int(os.environ.get('PORT', 8080))
 
@@ -828,7 +833,11 @@ def handle_error(e: Exception, status_code: int = HTTP_STATUS["SERVER_ERROR"]) -
 
 # Add this at the end of the file
 if __name__ == "__main__":
-    from flask import Flask, jsonify
+    # from flask import Flask, jsonify
+    from flask import Flask, request, jsonify
+    import smtplib
+    from email.mime.text import MIMEText
+    from firebase_admin import auth
     app = Flask(__name__)
     
     @app.route("/__/health")
@@ -838,9 +847,60 @@ if __name__ == "__main__":
     @app.route("/__/quitquitquit")
     def quitquitquit():
         return jsonify({"status": "ok"}), 200
+    
+    # @app.route("/send_custom_email_link", methods=["POST"])
+    # def send_custom_email_link():
+    #     try:
+    #         data = request.get_json()
+    #         email = data["email"]
+
+    #         # Create Firebase email link
+    #         action_code_settings = auth.ActionCodeSettings(
+    #         url="https://chat.blendarabic.com/auth/complete",  # 🔁 Must match frontend
+    #             handle_code_in_app=True,
+    #         )
+    #         link = auth.generate_sign_in_with_email_link(email, action_code_settings)
+
+    #         # Send custom email
+    #         send_email(to_email=email, sign_in_link=link)
+
+    #         return jsonify({"status": "success"}), 200
+
+    #     except Exception as e:
+    #         print("Error sending email link:", e)
+    #         return jsonify({"status": "error", "message": str(e)}), 500
+
+    # def send_email(to_email, sign_in_link):
+    #     from_email = "tech@blendarabic.com"
+    #     subject = "קישור התחברות לאפליקציית BlendArabic"
+    #     body = f"""
+    #     שלום,<br><br>
+    #     לחץ על הקישור כדי להתחבר:<br><br>
+    #     <a href="{sign_in_link}">התחברות לאפליקציה</a><br><br>
+    #     אם לא ביקשת זאת, ניתן להתעלם מהודעה זו.
+    #     """
+
+    #     msg = MIMEText(body, "html")
+    #     msg["Subject"] = subject
+    #     msg["From"] = from_email
+    #     msg["To"] = to_email
+
+    #     smtp_server = "smtp.gmail.com"
+    #     smtp_port = 465
+    #     import os
+    #     smtp_password = os.environ.get("SMTP_PASSWORD", "")
+
+    #     with smtplib.SMTP_SSL(smtp_server, smtp_port) as server:
+    #         server.login(from_email, smtp_password)
+    #         server.send_message(msg)
+
+    #     print(f"Email sent to {to_email}")
+
         
     @app.errorhandler(Exception)
     def handle_exception(e):
         return handle_error(e)
         
     app.run(host="0.0.0.0", port=PORT)
+
+    

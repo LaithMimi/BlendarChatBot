@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+} from "react";
 import {
   getAuth,
   signInWithPopup,
@@ -7,14 +13,14 @@ import {
   onAuthStateChanged,
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
-  signInWithEmailLink
+  signInWithEmailLink,
 } from "firebase/auth";
 import {
   getFirestore,
   doc,
   setDoc,
   getDoc,
-  updateDoc
+  updateDoc,
 } from "firebase/firestore";
 import Cookies from "js-cookie";
 import { app } from "../config/firebaseConfig";
@@ -50,8 +56,8 @@ export const useAuth = () => {
 
 // Example email link settings
 const actionCodeSettings = {
-  url: window.location.origin + '/auth/complete',
-  handleCodeInApp: true
+  url: window.location.origin + "/auth/complete",
+  handleCodeInApp: true,
 };
 
 // Helpers for session/cookie storage
@@ -73,7 +79,9 @@ const removeSessionItem = (key: string): void => {
   } catch {}
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const auth = useMemo(() => getAuth(app), []);
   const firestore = useMemo(() => getFirestore(app), []);
   const provider = useMemo(() => new GoogleAuthProvider(), []);
@@ -91,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Check if incoming URL is an email sign-in link
   useEffect(() => {
     if (isSignInWithEmailLink(auth, window.location.href)) {
-      let storedEmail = localStorage.getItem('emailForSignIn');
+      let storedEmail = localStorage.getItem("emailForSignIn");
       if (storedEmail) {
         completeEmailSignIn(storedEmail);
       } else {
@@ -101,7 +109,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [auth]);
 
   // Observe auth state
-   useEffect(() => {
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
@@ -131,19 +139,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               userName: user.displayName || user.email || "New User",
               createdAt: new Date().toISOString(),
               isPremium: false,
-              totalMessages: {}
+              totalMessages: {},
             });
           } else {
             // partial update
             await updateDoc(userRef, {
               userName: user.displayName || user.email || "UpdatedUser",
-              updatedAt: new Date().toISOString()
+              updatedAt: new Date().toISOString(),
             });
           }
-          
+
           // Check subscription status
           await checkSubscriptionStatus();
-
         } catch (error) {
           console.error("Error in onAuthStateChanged:", error);
         }
@@ -174,7 +181,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const sendEmailLink = async (email: string) => {
     try {
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-      localStorage.setItem('emailForSignIn', email);
+      localStorage.setItem("emailForSignIn", email);
       setEmail(email);
       setEmailLinkSent(true);
       return true;
@@ -183,11 +190,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return false;
     }
   };
+  // noor-
+  // const sendEmailLink = async (email: string): Promise<boolean> => {
+  //   try {
+  //     const res = await fetch("/send_custom_email_link", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ email }),
+  //     });
+
+  //     const result = await res.json();
+
+  //     if (res.ok && result.status === "success") {
+  //       localStorage.setItem("emailForSignIn", email);
+  //       setEmail(email);
+  //       setEmailLinkSent(true);
+  //       return true;
+  //     } else {
+  //       console.error("Backend returned error:", result.message);
+  //       return false;
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to send email sign-in link:", error);
+  //     return false;
+  //   }
+  // };
 
   const completeEmailSignIn = async (email: string) => {
     try {
       await signInWithEmailLink(auth, email, window.location.href);
-      localStorage.removeItem('emailForSignIn');
+      localStorage.removeItem("emailForSignIn");
       setEmailLinkSent(false);
       return true;
     } catch (error) {
@@ -220,7 +252,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUserId(devUserId);
     setIsPremium(true); // Dev mode gets premium access
 
-    Cookies.set("authToken", "dev_token_for_testing", { secure: true, sameSite: "strict" });
+    Cookies.set("authToken", "dev_token_for_testing", {
+      secure: true,
+      sameSite: "strict",
+    });
     setSessionItem("authToken", "dev_token_for_testing");
 
     // Optionally create a dev user doc in Firestore
@@ -232,7 +267,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: "dev@example.com",
         authProvider: "dev_mode",
         createdAt: new Date().toISOString(),
-        isPremium: true
+        isPremium: true,
       });
     } catch (error) {
       console.error("Error creating dev user in Firestore:", error);
@@ -252,54 +287,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       resetAuthState();
     }
   };
-  
+
   // Check subscription status
   const checkSubscriptionStatus = async (): Promise<boolean> => {
     if (!userId) return false;
-    
+
     try {
       // First check user document for isPremium flag
       const userRef = doc(firestore, "users", userId);
       const userDoc = await getDoc(userRef);
-      
+
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        
+
         // Check if user has isPremium flag
         if (userData.isPremium === true) {
           // Verify subscription is still active
           const subscriptionRef = doc(firestore, "subscriptions", userId);
           const subscriptionDoc = await getDoc(subscriptionRef);
-          
+
           if (subscriptionDoc.exists()) {
             const subscriptionData = subscriptionDoc.data();
-            
+
             // Check if subscription is active and not expired
             if (
-              (subscriptionData.status === 'active' || subscriptionData.status === 'trial') &&
+              (subscriptionData.status === "active" ||
+                subscriptionData.status === "trial") &&
               new Date(subscriptionData.endDate) > new Date()
             ) {
               setIsPremium(true);
               return true;
             }
           }
-          
+
           // If we get here, subscription is not active or has expired
           // Update user document to reflect this
           await updateDoc(userRef, {
             isPremium: false,
-            updatedAt: new Date().toISOString()
+            updatedAt: new Date().toISOString(),
           });
         }
-        
+
         setIsPremium(false);
         return false;
       }
-      
+
       setIsPremium(false);
       return false;
     } catch (error) {
-      console.error('Error checking subscription status:', error);
+      console.error("Error checking subscription status:", error);
       setIsPremium(false);
       return false;
     }
@@ -321,12 +357,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logout,
     devLogin,
     emailLinkSent,
-    checkSubscriptionStatus
+    checkSubscriptionStatus,
   };
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
