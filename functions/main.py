@@ -13,16 +13,12 @@ import os
 import traceback
 import textwrap
 
-#noor-
-from dotenv import load_dotenv
-load_dotenv()
-
 
 # Get the PORT environment variable, default to 8080
 PORT = int(os.environ.get('PORT', 8080))
 
 OPENAI_API_KEY = SecretParam("OPENAI_API_KEY")
-CORS_ORIGINS = ["https://chat\.blendarabic\.com", "http://localhost:8050"]
+CORS_ORIGINS = ["https://chat.blendarabic.com", "http://localhost:8050"]
 MAX_MONTHLY_MESSAGES = 50
 
 DEFAULT_WEEK = "01"
@@ -902,5 +898,3 @@ if __name__ == "__main__":
         return handle_error(e)
         
     app.run(host="0.0.0.0", port=PORT)
-
-    
