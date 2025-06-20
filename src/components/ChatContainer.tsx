@@ -81,8 +81,13 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
   }, [messages]);
 
   return (
-    <div className="chat-container border-brand-bordeaux/20 backdrop-blur-sm flex flex-col h-full">
-      <div className="chat-message-container p-4 flex-1 overflow-y-auto">
+      <div
+      className="
+        chat-container
+        border-brand-bordeaux/20 backdrop-blur-sm flex flex-col
+        w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl mx-auto h-[70vh] sm:h-[75vh] md:h-[80vh] lg:h-[85vh] xl:h-[90vh] 2xl:h-[95vh]"
+    >
+    <div className="chat-message-container p-4 flex-1 overflow-y-auto">
         {messages.map((message) => (
           <ChatMessage
             key={message.id}
