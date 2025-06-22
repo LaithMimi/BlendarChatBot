@@ -204,7 +204,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
         {suggestions.map((s, i) => (
           <button
             key={i}
-            className="bg-yellow-200 border border-yellow-400 rounded-full px-4 py-2 text-sm text-right hover:bg-yellow-300 transition disabled:opacity-50 rtl:text-right"
+            className="bg-yellow-200 dark:bg-yellow-700 border border-yellow-400 rounded-full px-4 py-2 text-sm text-right hover:bg-yellow-300 transition disabled:opacity-50 rtl:text-right"
             onClick={() => onSendMessage(s)}
             disabled={disabled}
             type="button"
