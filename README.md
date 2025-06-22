@@ -202,6 +202,9 @@ firebase functions:secrets:access OPENAI_API_KEY
 
 
 how to run in localhost:
+cd functions
+0- activate the venv
+ venv\Scripts\activate
 1- run -emulators :
 firebase emulators:start
 2-npm run dev
