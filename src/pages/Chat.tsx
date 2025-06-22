@@ -410,6 +410,8 @@ const Chat: React.FC = () => {
                   ? remainingMessages
                   : maxMessages - messageCount
               }
+              currentLanguage={userPreferences.language}    // ← new prop
+
             />
           </>
         )}

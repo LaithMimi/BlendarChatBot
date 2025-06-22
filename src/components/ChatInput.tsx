@@ -9,26 +9,28 @@ interface ChatInputProps {
   onSendMessage: (message: string) => void;
   disabled?: boolean;
   remainingMessages?: number;
+  currentLanguage: string; // new prop
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({ 
   onSendMessage, 
   disabled = false,
-  remainingMessages
+  remainingMessages,
+  currentLanguage // new
 }) => {
   const [message, setMessage] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
   const [isRtl, setIsRtl] = useState(false);
   const navigate = useNavigate();
   const { isPremium } = useAuth();
   
-  // Check if text contains RTL script (Arabic or Hebrew)
+  // Detect script-based direction
   useEffect(() => {
-    // Hebrew characters range: \u0590-\u05FF
-    // Arabic characters range: \u0600-\u06FF
     const rtlPattern = /[\u0590-\u05FF\u0600-\u06FF]/;
-    setIsRtl(rtlPattern.test(message));
-  }, [message]);
+    setIsRtl(
+      // If any RTL char AND language isn't explicitly english
+      rtlPattern.test(message) || currentLanguage !== 'english'
+    );
+  }, [message, currentLanguage]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,16 +45,22 @@ const ChatInput: React.FC<ChatInputProps> = ({
     navigate('/subscription');
   };
 
-  // Dynamic placeholder based on remaining messages and disabled state
   const getPlaceholder = () => {
-    if (disabled) {
-      return "Upgrade to premium to send more messages";
-    }
+    if (disabled) return currentLanguage === 'english'
+      ? "Upgrade to premium to send more messages"
+      : "שדרג לפרמיום כדי לשלוח הודעות נוספות";
     if (remainingMessages !== undefined && remainingMessages <= 5 && !isPremium) {
-      return `${remainingMessages} message${remainingMessages === 1 ? '' : 's'} remaining - Type your message`;
+      const rem = `${remainingMessages} message${remainingMessages === 1 ? '' : 's'} remaining`;
+      return currentLanguage === 'english'
+        ? `${rem} - Type your message`
+        : `נותרו ${remainingMessages} הודעות - כתוב הודעה`;
     }
-    return "Type your message here...";
+    return currentLanguage === 'english'
+      ? "Type your message here..."
+      : "כתוב כאן את ההודעה שלך...";
   };
+
+  const isLTR = currentLanguage === 'english' && !isRtl;
 
   return (
     <TooltipProvider>
@@ -65,22 +73,20 @@ const ChatInput: React.FC<ChatInputProps> = ({
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder={getPlaceholder()}
-            className={`w-full py-3 px-4 rounded-full 
-              ${disabled ? 'bg-gray-100 dark:bg-gray-800' : 'bg-white/80 dark:bg-black/20'} 
-              backdrop-blur-md border 
-              ${disabled ? 'border-red-300 dark:border-red-900/30' : 'border-white/20 dark:border-white/10'} 
-              focus:ring-2 
-              ${disabled ? 'focus:ring-red-300' : 'focus:ring-brand-yellow/30'} 
-              focus:outline-none transition-all duration-300 
-              ${isRtl ? 'text-right' : 'text-left'} 
+            className={`w-full py-3 px-4 rounded-full \
+              ${disabled ? 'bg-gray-100 dark:bg-gray-800' : 'bg-white/80 dark:bg-black/20'} \
+              backdrop-blur-md border \
+              ${disabled ? 'border-red-300 dark:border-red-900/30' : 'border-white/20 dark:border-white/10'} \
+              focus:ring-2 \
+              ${disabled ? 'focus:ring-red-300' : 'focus:ring-brand-yellow/30'} \
+              focus:outline-none transition-all duration-300 \
+              ${isRtl ? 'text-right' : 'text-left'} \
               ${disabled ? 'opacity-70 cursor-not-allowed' : ''}`}
-            dir={isRtl ? "rtl" : "ltr"}
-            lang={isRtl ? (message.match(/[\u0600-\u06FF]/) ? "ar" : "he") : "en"}
+            dir={isLTR ? 'ltr' : 'rtl'}
+            lang={isRtl ? (message.match(/[\u0600-\u06FF]/) ? 'ar' : 'he') : 'en'}
             autoComplete="off"
             disabled={disabled}
           />
-          
-          {/* Show count badge for remaining messages */}
           {remainingMessages !== undefined && remainingMessages < 10 && !isPremium && !disabled && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -89,22 +95,27 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 </span>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{remainingMessages} message{remainingMessages === 1 ? '' : 's'} remaining</p>
+                <p>{currentLanguage === 'english'
+                  ? `${remainingMessages} message${remainingMessages === 1 ? '' : 's'} remaining`
+                  : `נותרו ${remainingMessages} הודעות`}</p>
               </TooltipContent>
             </Tooltip>
           )}
         </div>
-        
         {disabled ? (
           <Button
             type="button"
             onClick={handleUpgrade}
             className="py-3 px-4 rounded-full bg-brand-yellow text-brand-darkGray transition-all duration-300 hover:shadow-md hover:scale-[1.02] flex items-center gap-2"
-            aria-label="Upgrade to premium"
+            aria-label={currentLanguage === 'english' ? 'Upgrade to premium' : 'שדרג לפרימיום'}
           >
             <Crown size={18} />
-            <span className="hidden sm:inline-block">Upgrade to Premium</span>
-            <span className="inline-block sm:hidden">Upgrade</span>
+            <span className="hidden sm:inline-block">
+              {currentLanguage === 'english' ? 'Upgrade to Premium' : 'שדרג לפרימיום'}
+            </span>
+            <span className="inline-block sm:hidden">
+              {currentLanguage === 'english' ? 'Upgrade' : 'שדרג'}
+            </span>
           </Button>
         ) : (
           <button
@@ -115,7 +126,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 ? 'opacity-100 hover:shadow-md hover:scale-[1.02]' 
                 : 'opacity-50 cursor-not-allowed'
             }`}
-            aria-label="Send message"
+            aria-label={currentLanguage === 'english' ? 'Send message' : 'שלח הודעה'}
           >
             <Send size={20} />
           </button>

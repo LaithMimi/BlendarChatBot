@@ -99,9 +99,6 @@ const PreferencesPopup: React.FC<PreferencesPopupProps> = ({ onSave, isOpen }) =
       >
         <DialogHeader className="space-y-2">
           <DialogTitle className="font-alef text-xl sm:text-2xl font-bold text-brand-darkGray dark:text-white flex items-center flex-wrap gap-2">
-            <span className="bg-brand-bordeaux text-white p-1 rounded-md">
-              {preferences.name.charAt(0) || '?'}
-            </span>
             <span>העדפות משתמש</span>
           </DialogTitle>
           <DialogDescription dir="rtl" className="text-sm sm:text-base">
