@@ -324,23 +324,22 @@ const Chat: React.FC = () => {
               <Alert className="mb-4 bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-900/30">
                 <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
                 <AlertTitle className="text-red-800 dark:text-red-300 font-bold text-lg">
-                  Message Limit Reached
+                  הגעת למגבלת ההודעות
                 </AlertTitle>
                 <AlertDescription className="space-y-4">
-                  <p className="text-red-700 dark:text-red-300">
-                    You've reached the limit of {maxMessages} messages for the
-                    free plan.
-                  </p>
-                  <p className="text-red-700 dark:text-red-300">
-                    Upgrade to Premium for unlimited messages and more features.
-                  </p>
-                  <Button
+                    <p className="text-red-700 dark:text-red-300">
+                    הגעת למגבלת {maxMessages} הודעות בתוכנית החינמית.
+                    </p>
+                    <p className="text-red-700 dark:text-red-300">
+                    שדרג לתוכנית פרימיום כדי לקבל הודעות ללא הגבלה ועוד פיצ'רים מתקדמים.
+                    </p>
+                    <Button
                     onClick={() => navigate("/subscription")}
                     className="mt-3 bg-brand-yellow hover:bg-brand-yellow/90 text-brand-darkGray flex items-center gap-2"
-                  >
+                    >
                     <Crown size={18} />
-                    Upgrade to Premium
-                  </Button>
+                    שדרג לפרימיום
+                    </Button>
                 </AlertDescription>
               </Alert>
             )}
@@ -349,17 +348,17 @@ const Chat: React.FC = () => {
               <Alert className="mb-4 bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-900/30">
                 <AlertTitle className="text-amber-800 dark:text-amber-300 flex items-center gap-2">
                   <AlertCircle className="h-4 w-4" />
-                  Almost at Message Limit
+                  כמעט הגעת למגבלת ההודעות
                 </AlertTitle>
                 <AlertDescription className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-amber-700 dark:text-amber-300">
-                        {messageCount} of {maxMessages} messages used
-                      </span>
-                      <span className="text-amber-700 dark:text-amber-300">
-                        {maxMessages - messageCount} remaining
-                      </span>
+                        <span className="text-amber-700 dark:text-amber-300">
+                        {messageCount} מתוך {maxMessages} הודעות נשלחו
+                        </span>
+                        <span className="text-amber-700 dark:text-amber-300">
+                        {maxMessages - messageCount} הודעות נותרו
+                        </span>
                     </div>
                     <Progress
                       value={usagePercentage}
@@ -371,9 +370,9 @@ const Chat: React.FC = () => {
                       />
                     </Progress>
                   </div>
-                  <p className="text-amber-700 dark:text-amber-300">
-                    Consider upgrading to Premium for unlimited messages.
-                  </p>
+                    <p className="text-amber-700 dark:text-amber-300">
+                    שקול לשדרג לפרימיום כדי לקבל הודעות ללא הגבלה.
+                    </p>
                   <Button
                     onClick={() => navigate("/subscription")}
                     className="bg-brand-bordeaux hover:bg-brand-bordeaux/90 text-white"
