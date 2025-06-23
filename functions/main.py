@@ -232,7 +232,7 @@ def create_arabic_teaching_prompt(level, week, question, gender, language, mater
         - Language interface: {language}
 
         TEACHING APPROACH:
-        - AUTHENTICITY: Teach natives’ actual speech.
+        - AUTHENTICITY: Teach natives' actual speech.
         - PERSONALIZATION: For beginners (level {level}, week {week}), lean on {language}. For advanced, use more Arabic.
         - EXAMPLES: Realistic usage.
         - PRONUNCIATION: Hebrew transliteration for Arabic.
@@ -637,18 +637,11 @@ def ask_user(req: https_fn.Request) -> https_fn.Response:
         if user_doc.exists:
             user_data = user_doc.to_dict()
             isPremium = user_data.get('premium', {}).get(current_month, False)
-            
             # If not premium, check message count
             if not isPremium:
                 totalMessages = user_data.get('totalMessages', {}).get(current_month, 0)
-                
-                # If at exact limit, send a warning with the response
-                if totalMessages == MAX_MONTHLY_MESSAGES - 1:
-                    # This is their last message, warn them
-                    limitWarning = True
-                    remainingMessages = 1
                 # If over limit, return limit reached response
-                elif totalMessages >= MAX_MONTHLY_MESSAGES:
+                if totalMessages >= MAX_MONTHLY_MESSAGES:
                     logger.info(f"User {user_id} has reached message limit: {totalMessages}/{MAX_MONTHLY_MESSAGES}")
                     return https_fn.Response(json.dumps({
                         'error': 'Message limit reached',
@@ -657,21 +650,11 @@ def ask_user(req: https_fn.Request) -> https_fn.Response:
                         'currentCount': totalMessages,
                         'maxLimit': MAX_MONTHLY_MESSAGES
                     }), status=HTTP_STATUS["FORBIDDEN"])
-                # If approaching limit (80% or more), add warning flag
-                elif totalMessages >= int(MAX_MONTHLY_MESSAGES * 0.8):
-                    limitWarning = True
-                    remainingMessages = MAX_MONTHLY_MESSAGES - totalMessages
-                else:
-                    limitWarning = False
-                    remainingMessages = MAX_MONTHLY_MESSAGES - totalMessages
             else:
-                # Premium users don't have limits
-                limitWarning = False
-                remainingMessages = -1  # -1 indicates unlimited
+                isPremium = True
         else:
             # New user, no warning needed
-            limitWarning = False
-            remainingMessages = MAX_MONTHLY_MESSAGES
+            isPremium = False
 
         # Validate OpenAI API key
         if not OPENAI_API_KEY.value:
@@ -710,8 +693,29 @@ def ask_user(req: https_fn.Request) -> https_fn.Response:
         session = add_messages_to_session(session, new_messages)
         
         # Increase message count
-        increase_user_message_count(user_id)
-
+        try:
+            logger.info(f"About to increment message count for {user_id}")
+            increase_user_message_count(user_id)
+            logger.info(f"Finished incrementing message count for {user_id}")
+        except Exception as e:
+            logger.error(f"Increment failed: {e}", exc_info=True)
+        # Now fetch the updated message count for the response
+        user_doc = db.collection('users').document(user_id).get()
+        user_data = user_doc.to_dict()
+        if isPremium:
+            limitWarning = False
+            remainingMessages = -1
+        else:
+            totalMessages = user_data.get('totalMessages', {}).get(current_month, 0)
+            if totalMessages == MAX_MONTHLY_MESSAGES:
+                limitWarning = True
+                remainingMessages = 0
+            elif totalMessages >= int(MAX_MONTHLY_MESSAGES * 0.8):
+                limitWarning = True
+                remainingMessages = MAX_MONTHLY_MESSAGES - totalMessages
+            else:
+                limitWarning = False
+                remainingMessages = MAX_MONTHLY_MESSAGES - totalMessages
         return https_fn.Response(json.dumps({
             "answer": bot_message['text'],
             "language": language,

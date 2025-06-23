@@ -27,7 +27,7 @@ interface ChatContainerProps {
 // 1️⃣ Templates for constructing “how do you say…” in each language
 const TRANSLATION_TEMPLATES: Record<string, (text: string) => string> = {
   arabic: (txt) => `كيف نقول "${txt}" بالعربية؟`,
-  hebrew: (txt) => `איך אומרים "${txt}" בעברית?`,
+  hebrew: (txt) => `איך אומרים "${txt}" בערבית?`,
   english: (txt) => `How do you say "${txt}" in English?`,
 };
 
