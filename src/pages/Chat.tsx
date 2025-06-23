@@ -327,19 +327,20 @@ const Chat: React.FC = () => {
                   הגעת למגבלת ההודעות
                 </AlertTitle>
                 <AlertDescription className="space-y-4">
-                    <p className="text-red-700 dark:text-red-300">
+                  <p className="text-red-700 dark:text-red-300">
                     הגעת למגבלת {maxMessages} הודעות בתוכנית החינמית.
-                    </p>
-                    <p className="text-red-700 dark:text-red-300">
-                    שדרג לתוכנית פרימיום כדי לקבל הודעות ללא הגבלה ועוד פיצ'רים מתקדמים.
-                    </p>
-                    <Button
+                  </p>
+                  <p className="text-red-700 dark:text-red-300">
+                    שדרג לתוכנית פרימיום כדי לקבל הודעות ללא הגבלה ועוד פיצ'רים
+                    מתקדמים.
+                  </p>
+                  <Button
                     onClick={() => navigate("/subscription")}
                     className="mt-3 bg-brand-yellow hover:bg-brand-yellow/90 text-brand-darkGray flex items-center gap-2"
-                    >
+                  >
                     <Crown size={18} />
                     שדרג לפרימיום
-                    </Button>
+                  </Button>
                 </AlertDescription>
               </Alert>
             )}
@@ -353,12 +354,12 @@ const Chat: React.FC = () => {
                 <AlertDescription className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                        <span className="text-amber-700 dark:text-amber-300">
+                      <span className="text-amber-700 dark:text-amber-300">
                         {messageCount} מתוך {maxMessages} הודעות נשלחו
-                        </span>
-                        <span className="text-amber-700 dark:text-amber-300">
+                      </span>
+                      <span className="text-amber-700 dark:text-amber-300">
                         {maxMessages - messageCount} הודעות נותרו
-                        </span>
+                      </span>
                     </div>
                     <Progress
                       value={usagePercentage}
@@ -370,9 +371,9 @@ const Chat: React.FC = () => {
                       />
                     </Progress>
                   </div>
-                    <p className="text-amber-700 dark:text-amber-300">
+                  <p className="text-amber-700 dark:text-amber-300">
                     שקול לשדרג לפרימיום כדי לקבל הודעות ללא הגבלה.
-                    </p>
+                  </p>
                   <Button
                     onClick={() => navigate("/subscription")}
                     className="bg-brand-bordeaux hover:bg-brand-bordeaux/90 text-white"
@@ -410,6 +411,8 @@ const Chat: React.FC = () => {
                   ? remainingMessages
                   : maxMessages - messageCount
               }
+              level={userPreferences.level}
+              week={userPreferences.week}
             />
           </>
         )}
