@@ -28,7 +28,7 @@ interface ChatContainerProps {
 const TRANSLATION_TEMPLATES: Record<string, (text: string) => string> = {
   arabic: (txt) => `كيف نقول "${txt}" بالعربية؟`,
   hebrew: (txt) => `איך אומרים "${txt}" בערבית?`,
-  english: (txt) => `How do you say "${txt}" in English?`,
+  english: (txt) => `How do you say "${txt}" in Arabic?`,
 };
 
 const DEFAULT_STATIC_SUGGESTIONS: Record<string, string[]> = {
